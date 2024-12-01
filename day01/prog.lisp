@@ -21,14 +21,14 @@
         collecting (abs (- i0 i1))))
 
 (defun part1 (file-name)
-  (let* ((lines (uiop:read-file-lines file-name)))
+  (let ((lines (uiop:read-file-lines file-name)))
     (destructuring-bind (list0 list1) (parse lines)
       (apply #'+ (compute-diffs list0 list1)))))
 
 (defun part2 (file-name)
-  (let* ((lines (uiop:read-file-lines file-name))
-         (count-occurrences (memoize (lambda (num lst)
-                                       (count num lst)))))
+  (let ((lines (uiop:read-file-lines file-name))
+        (count-occurrences (memoize (lambda (num lst)
+                                      (count num lst)))))
     (destructuring-bind (list0 list1) (parse lines)
       (apply #'+ (mapcar (lambda (num)
                            (let ((occurrences (funcall count-occurrences num list1)))
