@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+if [[ -z "$1" ]]; then
+  echo "Usage: new-day <day-num>"
+  exit 1
+fi
+
+DAY=$(printf "%02d" $1)
+DAY_DIR="day${DAY}"
+
+echo "Setting up for day ${DAY}"
+
+if [[ -d ${DAY_DIR} ]]; then
+  echo
+  echo "${DAY_DIR} already exists"
+  exit 1
+fi
+
+mkdir ${DAY_DIR}
+cp preamble.lisp ${DAY_DIR}/prog.lisp
+
+eza -lg --icons ${DAY_DIR}
+
