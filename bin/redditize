@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [[ -z "$1" ]]; then
+  echo "Usage: redditize <file-name>"
+  exit 1
+fi
+
+PREFIX="    "
+
+while IFS= read -r line; do
+  echo "${PREFIX}${line}"
+done < ${1}
+
