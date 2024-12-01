@@ -3,11 +3,6 @@
 (ql:quickload :lisp-utils)
 (ql:quickload :alexandria)
 
-; (ql:quickload :queues)
-
-; (require :queues.simple-queue)
-
-
 (use-package :lisp-utils)
 
 (defun parse (lines)
@@ -30,31 +25,20 @@
     (destructuring-bind (list0 list1) (parse lines)
       (apply #'+ (compute-diffs list0 list1)))))
 
-(defvar cache (make-hash-table))
-
-(defun count-occurrences (num lst)
-  (let ((val (gethash num cache)))
-    (if val
-        val
-        (progn
-          (let ((val (count num lst)))
-            (setf (gethash num cache) val)
-            val)))))
-
-
 (defun part2 (file-name)
-  (let* ((lines (uiop:read-file-lines file-name)))
+  (let* ((lines (uiop:read-file-lines file-name))
+         (count-occurrences (memoize (lambda (num lst)
+                                       (count num lst)))))
     (destructuring-bind (list0 list1) (parse lines)
       (apply #'+ (mapcar (lambda (num)
-                           (let ((occurrences (count-occurrences num list1)))
+                           (let ((occurrences (funcall count-occurrences num list1)))
                              (* num occurrences)))
                          list0)))))
 
+(print (part1 "input0.txt"))
+(print (part1 "input1.txt"))
 
-(part1 "input0.txt")
-(part1 "input1.txt")
-
-(part2 "input0.txt")
-(part2 "input1.txt")
+(print (part2 "input0.txt"))
+(print (part2 "input1.txt"))
 
 
