@@ -11,7 +11,7 @@
 (use-package :lisp-utils)
 
 (defun parse (file-name)
-  (let* ((lines (uiop:read-file-lines file-name)))
+  (let ((lines (uiop:read-file-lines file-name)))
     (mapcar (lambda (line)
               (mapcar #'parse-integer (cl-ppcre:split "\\s+" line)))
             lines)))
@@ -45,7 +45,7 @@
            changes)))
 
 (defun check-report (report)
-  (let* ((pairs (pairwise report)))
+  (let ((pairs (pairwise report)))
     (if (all-increasing-or-decreasing pairs)
         (gradual-change-p pairs)
         nil)))
@@ -59,7 +59,7 @@
     (nreverse new-list)))
 
 (defun check-amended-report (report slot-to-remove)
-  (let* ((amended-report (remove-item report slot-to-remove)))
+  (let ((amended-report (remove-item report slot-to-remove)))
     (if (check-report amended-report)
         t
         (if (/= (1+ slot-to-remove) (length report))
@@ -67,7 +67,7 @@
             nil))))
 
 (defun part1 (file-name)
-  (let* ((reports (parse file-name)))
+  (let ((reports (parse file-name)))
     (count t (mapcar #'check-report reports))))
 
 (defun part2 (file-name)
