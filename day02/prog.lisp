@@ -40,8 +40,7 @@
   (let ((changes (loop for pair in pairs
                        collecting (abs (- (second pair) (first pair))))))
     (every (lambda (diff)
-             (and (> diff 0)
-                  (< diff 4)))
+             (< 0 diff 4))
            changes)))
 
 (defun check-report (report)
