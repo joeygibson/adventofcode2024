@@ -50,12 +50,40 @@
         (gradual-change-p pairs)
         nil)))
 
+(defun remove-item (lst index)
+  (let ((new-list nil))
+    (loop for c in lst
+          for i from 0
+          if (not (= i index))
+            do (push c new-list))
+    (nreverse new-list)))
+
+(defun check-amended-report (report slot-to-remove)
+  (let* ((amended-report (remove-item report slot-to-remove)))
+    (if (check-report amended-report)
+        t
+        (if (/= (1+ slot-to-remove) (length report))
+            (check-amended-report report (1+ slot-to-remove))
+            nil))))
+
 (defun part1 (file-name)
   (let* ((reports (parse file-name)))
     (count t (mapcar #'check-report reports))))
 
+(defun part2 (file-name)
+  (let* ((reports (parse file-name))
+         (good-reports (remove-if-not #'check-report reports))
+         (bad-reports (remove-if #'check-report reports)))
+    (loop for report in bad-reports
+          if (check-amended-report report 0)
+            do (push report good-reports))
+    (length good-reports)))
+
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
+
+(print (part2 "input0.txt"))
+(print (part2 "input1.txt"))
 
 
 
