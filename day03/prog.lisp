@@ -15,14 +15,14 @@
     lines))
 
 (defun part1 (file-name)
-  (let* ((data (parse file-name)))
+  (let ((data (parse file-name)))
     (apply #'+ (mapcar (lambda (line)
-                         (let ((products nil))
-                           (cl-ppcre:do-register-groups (match) ("(mul\\(\\d+,\\d+\\))" line)
-                             (destructuring-bind (a b) (mapcar #'parse-integer (cl-ppcre:all-matches-as-strings "\\d+" match))
-                               (push (* a b) products)))
-                           (apply #'+ products)))
+                         (loop for match in (cl-ppcre:all-matches-as-strings "(mul\\(\\d+,\\d+\\))" line)
+                               summing (destructuring-bind (a b)
+                                           (mapcar #'parse-integer (cl-ppcre:all-matches-as-strings "\\d+" match))
+                                         (* a b))))
                        data))))
+
 
 (defun part2 (file-name)
   (let* ((data (parse file-name))
