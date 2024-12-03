@@ -19,10 +19,8 @@
     (apply #'+ (mapcar (lambda (line)
                          (let ((products nil))
                            (cl-ppcre:do-register-groups (match) ("(mul\\(\\d+,\\d+\\))" line)
-                             (destructuring-bind (a b) (cl-ppcre:all-matches-as-strings "\\d+" match)
-                               (push (* (parse-integer a)
-                                        (parse-integer b))
-                                     products)))
+                             (destructuring-bind (a b) (mapcar #'parse-integer (cl-ppcre:all-matches-as-strings "\\d+" match))
+                               (push (* a b) products)))
                            (apply #'+ products)))
                        data))))
 
@@ -38,10 +36,8 @@
                                     (setf enabled nil))
                                    (t
                                     (when enabled
-                                      (destructuring-bind (a b) (cl-ppcre:all-matches-as-strings "\\d+" match)
-                                        (push (* (parse-integer a)
-                                                 (parse-integer b))
-                                              products))))))
+                                      (destructuring-bind (a b) (mapcar #'parse-integer (cl-ppcre:all-matches-as-strings "\\d+" match))
+                                        (push (* a b) products))))))
                            (apply #'+ products)))
                        data))))
 
