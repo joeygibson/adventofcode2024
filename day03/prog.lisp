@@ -16,20 +16,44 @@
 
 (defun part1 (file-name)
   (let* ((data (parse file-name)))
-    (mapcar (lambda (line)
-              (let ((matches nil)
-                    (hits (cl-ppcre:scan-to-strings "mul(\\d+,\\d+)" line)))
-                (print hits)))
-            data)))
+    (apply #'+ (mapcar (lambda (line)
+                         (let ((products nil))
+                           (cl-ppcre:do-register-groups (match) ("(mul\\(\\d+,\\d+\\))" line)
+                             (destructuring-bind (a b) (cl-ppcre:all-matches-as-strings "\\d+" match)
+                               (push (* (parse-integer a)
+                                        (parse-integer b))
+                                     products)))
+                           (apply #'+ products)))
+                       data))))
 
 (defun part2 (file-name)
-  (let* ((data (parse file-name)))))
+  (let* ((data (parse file-name))
+         (enabled t))
+    (apply #'+ (mapcar (lambda (line)
+                         (let ((products nil))
+                           (cl-ppcre:do-register-groups (match) ("(mul\\(\\d+,\\d+\\)|do\\(\\)|don't\\(\\))" line)
+                             (cond ((equal match "do()")
+                                    (print "enabled")
+                                    (setf enabled t))
+                                   ((equal match "don't()")
+                                    (print "disabled")
+                                    (setf enabled nil))
+                                   (t
+                                    (when enabled
+                                      (destructuring-bind (a b) (cl-ppcre:all-matches-as-strings "\\d+" match)
+                                        (print match)
+                                        (push (* (parse-integer a)
+                                                 (parse-integer b))
+                                              products))))))
+                           (apply #'+ products)))
+                       data))))
 
 (print (part1 "input0.txt"))
-; (print (part1 "input1.txt"))
+(print (part1 "input1.txt"))
 
-; (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
+(print (part2 "input2.txt"))
+(print (part2 "input1.txt"))
 
+(cl-ppcre:all-matches-as-strings "\\d+" "mul(123,234)")
 
 
