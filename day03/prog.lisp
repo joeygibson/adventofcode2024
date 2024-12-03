@@ -33,15 +33,12 @@
                          (let ((products nil))
                            (cl-ppcre:do-register-groups (match) ("(mul\\(\\d+,\\d+\\)|do\\(\\)|don't\\(\\))" line)
                              (cond ((equal match "do()")
-                                    (print "enabled")
                                     (setf enabled t))
                                    ((equal match "don't()")
-                                    (print "disabled")
                                     (setf enabled nil))
                                    (t
                                     (when enabled
                                       (destructuring-bind (a b) (cl-ppcre:all-matches-as-strings "\\d+" match)
-                                        (print match)
                                         (push (* (parse-integer a)
                                                  (parse-integer b))
                                               products))))))
@@ -54,6 +51,5 @@
 (print (part2 "input2.txt"))
 (print (part2 "input1.txt"))
 
-(cl-ppcre:all-matches-as-strings "\\d+" "mul(123,234)")
 
 
