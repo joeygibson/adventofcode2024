@@ -39,20 +39,17 @@
 
 (defstruct x-mas top-left top-right bottom-left bottom-right)
 
-(defun get-neighbors-part-2 (spot)
-  (let* ((neighbors nil)
-         (x (car spot))
+(defun get-corners (spot)
+  (let* ((x (car spot))
          (y (cdr spot))
          (top-left-corner (cons (- x 1) (- y 1)))
          (top-right-corner (cons (+ x 1) (- y 1)))
          (bottom-left-corner (cons (- x 1) (+ y 1)))
          (bottom-right-corner (cons (+ x 1) (+ y 1))))
-    (push (make-x-mas :top-left top-left-corner
-                      :top-right top-right-corner
-                      :bottom-left bottom-left-corner
-                      :bottom-right bottom-right-corner)
-          neighbors)
-    neighbors))
+    (make-x-mas :top-left top-left-corner
+                :top-right top-right-corner
+                :bottom-left bottom-left-corner
+                :bottom-right bottom-right-corner)))
 
 (defun xmas-p (puzzle coords letters)
   (let ((matches 0))
@@ -61,17 +58,6 @@
           do (when (equal (gethash spot puzzle ".") l)
                (incf matches)))
     (eq matches (length letters))))
-
-(defun part1 (file-name)
-  (let* ((puzzle (parse file-name))
-         (xs (find-all-starts puzzle "X"))
-         (matches nil))
-    (dolist (spot xs)
-      (let ((neighbors (get-neighbors spot)))
-        (loop for neighbor in neighbors
-              if (xmas-p puzzle neighbor '("X" "M" "A" "S"))
-                do (push neighbor matches))))
-    (length matches)))
 
 (defun x-mas-p (puzzle xmas)
   (let* ((top-left (gethash (x-mas-top-left xmas) puzzle "."))
@@ -89,19 +75,27 @@
                          (equal bottom-left (fourth combo))))
             return t)))
 
-(defun part2 (file-name)
+(defun part1 (file-name)
   (let* ((puzzle (parse file-name))
-         (xs (find-all-starts puzzle "A"))
+         (xs (find-all-starts puzzle "X"))
          (matches nil))
     (dolist (spot xs)
-      (let ((neighbors (get-neighbors-part-2 spot)))
+      (let ((neighbors (get-neighbors spot)))
         (loop for neighbor in neighbors
-              if (x-mas-p puzzle neighbor)
+              if (xmas-p puzzle neighbor '("X" "M" "A" "S"))
                 do (push neighbor matches))))
     (length matches)))
+
+(defun part2 (file-name)
+  (let* ((puzzle (parse file-name))
+         (xs (find-all-starts puzzle "A")))
+    (count-if (lambda (spot)
+                (x-mas-p puzzle (get-corners spot)))
+              xs)))
 
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
 
 (print (part2 "input0.txt"))
 (print (part2 "input1.txt"))
+
