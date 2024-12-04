@@ -32,31 +32,18 @@
   (let* ((neighbors nil)
          (x (car spot))
          (y (cdr spot)))
-    (push (loop for i from 0 to 3
-                collecting (cons (+ x i) y))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons (- x i) y))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons x (- y i)))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons x (+ y i)))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons (- x i) (- y i)))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons (+ x i) (- y i)))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons (- x i) (+ y i)))
-          neighbors)
-    (push (loop for i from 0 to 3
-                collecting (cons (+ x i) (+ y i)))
-          neighbors)
-    neighbors))
+    (mapc (lambda (lst)
+            (push lst neighbors))
+          (multiple-value-list (loop for i from 0 to 3
+                                     collecting (cons (+ x i) y) into right
+                                     collecting (cons (- x i) y) into left
+                                     collecting (cons x (- y i)) into up
+                                     collecting (cons x (+ y i)) into down
+                                     collecting (cons (- x i) (- y i)) into up-left
+                                     collecting (cons (+ x i) (- y i)) into up-right
+                                     collecting (cons (- x i) (+ y i)) into down-left
+                                     collecting (cons (+ x i) (+ y i)) into down-right
+                                     finally (return (values right left up down up-left up-right down-left down-right)))))))
 
 (defstruct x-mas top-left top-right bottom-left bottom-right)
 
