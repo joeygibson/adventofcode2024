@@ -3,9 +3,9 @@
 (ql:quickload :lisp-utils)
 (ql:quickload :alexandria)
 
-; (ql:quickload :queues)
+                                        ; (ql:quickload :queues)
 
-; (require :queues.simple-queue)
+                                        ; (require :queues.simple-queue)
 
 
 (use-package :lisp-utils)
@@ -29,21 +29,18 @@
     (nreverse xs)))
 
 (defun get-neighbors (spot)
-  (let* ((neighbors nil)
-         (x (car spot))
+  (let* ((x (car spot))
          (y (cdr spot)))
-    (mapc (lambda (lst)
-            (push lst neighbors))
-          (multiple-value-list (loop for i from 0 to 3
-                                     collecting (cons (+ x i) y) into right
-                                     collecting (cons (- x i) y) into left
-                                     collecting (cons x (- y i)) into up
-                                     collecting (cons x (+ y i)) into down
-                                     collecting (cons (- x i) (- y i)) into up-left
-                                     collecting (cons (+ x i) (- y i)) into up-right
-                                     collecting (cons (- x i) (+ y i)) into down-left
-                                     collecting (cons (+ x i) (+ y i)) into down-right
-                                     finally (return (values right left up down up-left up-right down-left down-right)))))))
+    (multiple-value-list (loop for i from 0 to 3
+                               collecting (cons (+ x i) y) into right
+                               collecting (cons (- x i) y) into left
+                               collecting (cons x (- y i)) into up
+                               collecting (cons x (+ y i)) into down
+                               collecting (cons (- x i) (- y i)) into up-left
+                               collecting (cons (+ x i) (- y i)) into up-right
+                               collecting (cons (- x i) (+ y i)) into down-left
+                               collecting (cons (+ x i) (+ y i)) into down-right
+                               finally (return (values right left up down up-left up-right down-left down-right))))))
 
 (defstruct x-mas top-left top-right bottom-left bottom-right)
 
@@ -113,7 +110,3 @@
 
 (print (part2 "input0.txt"))
 (print (part2 "input1.txt"))
-
-
-
-
