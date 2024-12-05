@@ -33,15 +33,6 @@
                      (push previous-page (gethash page rule-map)))))
     rule-map))
 
-(defun make-reverse-rule-table (rules)
-  (let ((rule-map (make-hash-table)))
-    (loop for rule in rules
-          do (let* ((page (second rule))
-                    (previous-page (first rule)))
-               (setf (gethash page rule-map)
-                     (push page (gethash previous-page rule-map)))))
-    rule-map))
-
 (defun validate-updates (rule-map updates)
   (remove-if-not (lambda (update)
                    (every (lambda (page)
@@ -67,17 +58,15 @@
            (answer 0))
       (dolist (update invalid-updates)
         (let* ((counts (make-hash-table)))
-          (loop for page in update
-                do (setf (gethash page counts) 0))
-          (maphash (lambda (front back)
-                     (loop for b in back
-                           do (when (and (member front update)
-                                         (member b update))
-                                (incf (gethash front counts)))))
+          (maphash (lambda (page previous-pages)
+                     (loop for previous-page in previous-pages
+                           do (when (and (member page update)
+                                         (member previous-page update))
+                                (incf (gethash page counts 0)))))
                    rule-map)
           (loop named loop
                 for page in update
-                do (when (= (gethash page counts) (floor (length update) 2))
+                do (when (= (gethash page counts 0) (floor (length update) 2))
                      (incf answer page)
                      (return-from loop)))))
       answer)))
