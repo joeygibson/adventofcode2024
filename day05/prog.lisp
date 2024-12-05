@@ -33,6 +33,15 @@
                      (push previous-page (gethash page rule-map)))))
     rule-map))
 
+(defun make-reverse-rule-table (rules)
+  (let ((rule-map (make-hash-table)))
+    (loop for rule in rules
+          do (let* ((page (second rule))
+                    (previous-page (first rule)))
+               (setf (gethash page rule-map)
+                     (push page (gethash previous-page rule-map)))))
+    rule-map))
+
 (defun validate-updates (rule-map updates)
   (remove-if-not (lambda (update)
                    (every (lambda (page)
@@ -48,26 +57,33 @@
                             (nth (floor (length update) 2) update))
                           valid-updates)))))
 
-(defun reorder-pages (rules update)
-  (let ((ordered-update nil))
-    (loop for page in update
-          do (let* ((previous-pages (gethash page rules))
-                    (included-pages (intersection previous-pages update))
-                    (page-position (position page update)))
-               (dolist (included-page included-pages)
-                 (format t "~&~a -> ~a~%" page included-page))))))
-
 (defun part2 (file-name)
   (multiple-value-bind (rules updates) (parse file-name)
     (let* ((rule-map (make-rule-table rules))
            (valid-updates (validate-updates rule-map updates))
            (invalid-updates (remove-if (lambda (update)
                                          (position update valid-updates))
-                                       updates)))      
-      (reorder-pages rule-map (second invalid-updates)))))
+                                       updates))
+           (answer 0))
+      (dolist (update invalid-updates)
+        (let* ((counts (make-hash-table)))
+          (loop for page in update
+                do (setf (gethash page counts) 0))
+          (maphash (lambda (front back)
+                     (loop for b in back
+                           do (when (and (member front update)
+                                         (member b update))
+                                (incf (gethash front counts)))))
+                   rule-map)
+          (loop named loop
+                for page in update
+                do (when (= (gethash page counts) (floor (length update) 2))
+                     (incf answer page)
+                     (return-from loop)))))
+      answer)))
 
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
 
 (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
+(print (part2 "input1.txt"))
