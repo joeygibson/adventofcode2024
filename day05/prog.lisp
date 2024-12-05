@@ -1,0 +1,57 @@
+(ql:quickload :cl-ppcre)
+(ql:quickload :split-sequence)
+(ql:quickload :lisp-utils)
+(ql:quickload :alexandria)
+
+(use-package :lisp-utils)
+
+(defun parse (file-name)
+  (let* ((sections (split-file-into-sections file-name))
+         (rules (mapcar (lambda (line)
+                          (mapcar #'parse-integer (cl-ppcre:split "\\|" line)))
+                        (first sections)))
+         (updates (mapcar (lambda (line)
+                            (mapcar #'parse-integer (cl-ppcre:split "," line)))
+                          (second sections))))
+    (values rules updates)))
+
+(defun is-valid (page rules update)
+  (let* ((previous-pages (gethash page rules))
+         (included-pages (intersection previous-pages update))
+         (page-position (position page update)))
+    (every (lambda (previous-page)
+             (let ((previous-page-position (position previous-page update)))
+               (< previous-page-position page-position)))
+           included-pages)))
+
+(defun part1 (file-name)
+  (multiple-value-bind (rules updates) (parse file-name)
+    (let* ((rule-map (make-hash-table)))
+      (loop for rule in rules
+            do (let* ((page (second rule))
+                      (previous-page (first rule)))
+                 (setf (gethash page rule-map)
+                       (push previous-page (gethash page rule-map)))))
+      (let ((valid-updates nil))
+        (dolist (update updates)
+          (when (every (lambda (page)
+                         (is-valid page rule-map update))
+                       update)
+            (push update valid-updates)))
+        (reduce #'+ (mapcar (lambda (update)
+                              (nth (floor (length update) 2) update))
+                            valid-updates))))))
+
+(defun part2 (file-name)
+  (let* ((data (parse file-name)))))
+
+(print (part1 "input0.txt"))
+; (print (part1 "input1.txt"))
+
+; (print (part2 "input0.txt"))
+; (print (part2 "input1.txt"))
+
+
+(multiple-value-bind (rules updates) (parse "input0.txt")
+  (print rules)
+  (print updates))
