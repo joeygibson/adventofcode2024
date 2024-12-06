@@ -76,16 +76,15 @@
                  (cond ((null next-spot) ; out of bounds
                         (setf in-bounds nil))
                        ((typep next-spot 'floor-tile) ; floor-tile
-                        (print (visit-count next-spot))
-                        (when (> (visit-count next-spot) 1)
+                        ; (print (visit-count next-spot))
+                        (when (> (visit-count next-spot) 5)
                           (print "LOOP")
                           (return 'in-a-loop))
                         (setf (visited next-spot) t)
                         (add-visit next-spot)
                         (setf (guard-x guard) x)
                         (setf (guard-y guard) y))
-                       ((or (typep next-spot 'furniture)
-                            (typep next-spot 'obstacle))
+                       (t
                         (let ((new-direction (cond ((eql guard-direction :up) :right)
                                                    ((eql guard-direction :right) :down)
                                                    ((eql guard-direction :down) :left)
@@ -101,26 +100,42 @@
           count (and (typep spot 'floor-tile)
                      (visited spot)))))
 
+(defun find-obstacle (the-map)
+  (maphash (lambda (k v)
+             (when (typep v 'obstacle)
+               (format t "~&obstacle at ~a~%" k)))
+           the-map))
+
+(defun print-visit-counts (the-map)
+  (maphash (lambda (k v)
+             (when (and (typep v 'floor-tile)
+                        (> (visit-count v) 0))
+              (format t "~&~a visited ~a~%" k (visit-count v))))
+           the-map))
+
 (defun part2 (file-name)
   (multiple-value-bind (the-map guard) (parse file-name)
     (let* ((guard-pos (cons (guard-x guard)
                             (guard-y guard)))
            (loop-count 0))
-      (loop for pos being the hash-key of the-map
+      (loop for pos being the hash-keys of the-map
             do (progn
-                 (when (and (not (equal pos guard-pos))
-                            (typep (gethash pos the-map) 'floor-tile))
-                   (let* ((map-copy (alexandria:copy-hash-table the-map)))
+                 (multiple-value-bind (map-copy guard) (parse file-name)
+                   (when (and (not (equal pos guard-pos))
+                              (typep (gethash pos the-map) 'floor-tile))
+                     (print-visit-counts map-copy)
                      (setf (gethash pos map-copy) (make-instance 'obstacle))
-                     (when (equal (play map-copy guard) 'in-a-loop)
-                       (incf loop-count))))))
+                     (let ((results (play map-copy guard)))
+                       ;(format t "~&~a -> ~a~%" pos results)
+                       (when (equal results 'in-a-loop)
+                         (incf loop-count)))))))
       loop-count)))
 
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
 
 (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
+(print (part2 "input1.txt"))
 
 
 
