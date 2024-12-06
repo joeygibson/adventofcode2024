@@ -76,9 +76,7 @@
                  (cond ((null next-spot) ; out of bounds
                         (setf in-bounds nil))
                        ((typep next-spot 'floor-tile) ; floor-tile
-                        ; (print (visit-count next-spot))
                         (when (> (visit-count next-spot) 5)
-                          (print "LOOP")
                           (return 'in-a-loop))
                         (setf (visited next-spot) t)
                         (add-visit next-spot)
@@ -91,27 +89,12 @@
                                                    ((eql guard-direction :left) :up))))
                           (setf (direction guard) new-direction)))))))))
 
-
-
 (defun part1 (file-name)
   (multiple-value-bind (the-map guard) (parse file-name)
     (play the-map guard)
     (loop for spot being the hash-value of the-map
           count (and (typep spot 'floor-tile)
                      (visited spot)))))
-
-(defun find-obstacle (the-map)
-  (maphash (lambda (k v)
-             (when (typep v 'obstacle)
-               (format t "~&obstacle at ~a~%" k)))
-           the-map))
-
-(defun print-visit-counts (the-map)
-  (maphash (lambda (k v)
-             (when (and (typep v 'floor-tile)
-                        (> (visit-count v) 0))
-              (format t "~&~a visited ~a~%" k (visit-count v))))
-           the-map))
 
 (defun part2 (file-name)
   (multiple-value-bind (the-map guard) (parse file-name)
@@ -123,10 +106,8 @@
                  (multiple-value-bind (map-copy guard) (parse file-name)
                    (when (and (not (equal pos guard-pos))
                               (typep (gethash pos the-map) 'floor-tile))
-                     (print-visit-counts map-copy)
                      (setf (gethash pos map-copy) (make-instance 'obstacle))
                      (let ((results (play map-copy guard)))
-                       ;(format t "~&~a -> ~a~%" pos results)
                        (when (equal results 'in-a-loop)
                          (incf loop-count)))))))
       loop-count)))
@@ -136,6 +117,4 @@
 
 (print (part2 "input0.txt"))
 (print (part2 "input1.txt"))
-
-
 
