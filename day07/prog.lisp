@@ -39,7 +39,9 @@
          (solution (cond ((equal op1 "*")
                           (* op0 op2))
                          ((equal op1 "+")
-                          (+ op0 op2)))))
+                          (+ op0 op2))
+                         ((equal op1 "||")
+                          (parse-integer (format nil "~a~a" op0 op2))))))
     (if remaining-ops
         (solve (cons solution remaining-ops))
         solution)))
@@ -60,13 +62,25 @@
     (reduce #'+ solvable)))
 
 (defun part2 (file-name)
-  (let* ((data (parse file-name)))))
+  (let* ((equations (parse file-name))
+         (solvable nil))
+    (dolist (equation equations)
+      (let* ((answer (car equation))
+             (operands (cdr equation))
+             (operators (all-combinations '("+" "*" "||") (1- (length operands)))))
+        (loop for opset in operators
+              when (let ((solution (solve (interleave operands opset))))
+                     (eq solution answer))
+                do (progn
+                     (push answer solvable)
+                     (return 'done)))))
+    (reduce #'+ solvable)))
 
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
 
-; (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
+(print (part2 "input0.txt"))
+(print (part2 "input1.txt"))
 
 
 
