@@ -6,7 +6,6 @@
 (use-package :lisp-utils)
 
 (defun all-combinations (values num-items)
-  "Generate all combinations for NUM-ITEMS, each of which can take any of the VALUES."
   (if (= num-items 0)
       '(())
       (let ((rest-combinations (all-combinations values (- num-items 1))))
@@ -46,13 +45,13 @@
         (solve (cons solution remaining-ops))
         solution)))
 
-(defun part1 (file-name)
+(defun partx (file-name all-operators)
   (let* ((equations (parse file-name))
          (solvable nil))
     (dolist (equation equations)
       (let* ((answer (car equation))
              (operands (cdr equation))
-             (operators (all-combinations '("+" "*") (1- (length operands)))))
+             (operators (all-combinations all-operators (1- (length operands)))))
         (loop for opset in operators
               when (let ((solution (solve (interleave operands opset))))
                      (eq solution answer))
@@ -61,26 +60,11 @@
                      (return 'done)))))
     (reduce #'+ solvable)))
 
-(defun part2 (file-name)
-  (let* ((equations (parse file-name))
-         (solvable nil))
-    (dolist (equation equations)
-      (let* ((answer (car equation))
-             (operands (cdr equation))
-             (operators (all-combinations '("+" "*" "||") (1- (length operands)))))
-        (loop for opset in operators
-              when (let ((solution (solve (interleave operands opset))))
-                     (eq solution answer))
-                do (progn
-                     (push answer solvable)
-                     (return 'done)))))
-    (reduce #'+ solvable)))
+(print (partx "input0.txt" '("*" "+")))
+(print (partx "input1.txt" '("*" "+")))
 
-(print (part1 "input0.txt"))
-(print (part1 "input1.txt"))
-
-(print (part2 "input0.txt"))
-(print (part2 "input1.txt"))
+(print (partx "input0.txt" '("*" "+" "||")))
+(print (partx "input1.txt" '("*" "+" "||")))
 
 
 
