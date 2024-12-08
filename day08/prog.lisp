@@ -48,9 +48,8 @@
     (list (cons (round (- x1 (* distance unit-dx))) (round (- y1 (* distance unit-dy))))
           (cons (round (+ x2 (* distance unit-dx))) (round (+ y2 (* distance unit-dy)))))))
 
-(defun plot-new-points-2 (spot1 spot2 distance width height)
-  (let* ((new-points nil)
-         (x1 (car spot1))
+(defun plot-new-points-2 (new-spots spot1 spot2 distance width height)
+  (let* ((x1 (car spot1))
          (y1 (cdr spot1))
          (x2 (car spot2))
          (y2 (cdr spot2))
@@ -62,15 +61,13 @@
          (unit-dy (/ dy vec-length))
          (new-a (cons (round (- x1 (* distance unit-dx))) (round (- y1 (* distance unit-dy)))))
          (new-b (cons (round (+ x2 (* distance unit-dx))) (round (+ y2 (* distance unit-dy))))))
-    (when (in-bounds new-a width height)
-      (push new-a new-points)
-      (nconc new-points (plot-new-points-2 spot1 new-a distance width height)))
-    (when (in-bounds new-b width height)
-      (push new-b new-points)
-      (nconc new-points (plot-new-points-2 spot2 new-b distance width height)))
-    (print new-points)
-    new-points))
-
+    (when (and (in-bounds new-a width height) (not (member new-a new-spots :test #'equal)))
+      (push new-a new-spots)
+      (setf new-spots (append new-spots (plot-new-points-2 new-spots spot1 new-a distance width height))))
+    (when (and (in-bounds new-b width height) (not (member new-b new-spots :test #'equal)))
+      (push new-b new-spots)
+      (setf new-spots (append new-spots (plot-new-points-2 new-spots spot2 new-b distance width height))))
+    new-spots))
 
 (defun part1 (file-name)
   (multiple-value-bind (map antennas width height) (parse file-name)
@@ -113,7 +110,7 @@
                  (loop for oa in other-antennas
                        do (let* ((other-antenna-loc (car oa))
                                  (distance (euclidean-distance-integers this-antenna-loc other-antenna-loc))
-                                 (new-points (plot-new-points-2 this-antenna-loc other-antenna-loc distance width height)))
+                                 (new-points (plot-new-points-2 () this-antenna-loc other-antenna-loc distance width height)))
                             (dolist (point new-points)
                               (when (in-bounds point width height)
                                 (push point antinodes)))))))
@@ -126,7 +123,8 @@
 (print (part1 "input1.txt"))
 
 (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
+(print (part2 "input1.txt"))
+
 
 
 
