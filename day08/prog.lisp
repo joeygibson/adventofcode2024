@@ -97,7 +97,7 @@
        (and (>= (cdr point) 0)
             (< (cdr point) height))))
 
-(defun part2 (file-name)
+(defun part2a (file-name)
   (multiple-value-bind (map antennas width height) (parse file-name)
     (let* ((antinodes nil))
       (loop for ua in antennas
@@ -116,14 +116,52 @@
                                 (push point antinodes)))))))
       (length (remove-duplicates antinodes :test #'equal)))))
 
+(defun part2 (lines)
+  (let ((antennas (make-hash-table :test #'equal))
+        (n (length lines))
+        (m (length (first lines)))
+        (antinodes nil)
+        (harmonics nil))
+    (loop for row in lines
+          for r from 0
+          do (loop for col in (cl-ppcre:split "" row)
+                   for c from 0
+                   do (when (not (equal col "."))
+                        (let* ((cur-value (gethash col antennas))
+                               (new-value (cons (cons r c) cur-value)))
+                          (setf (gethash col antennas) new-value)))))
+    (dolist (nodes (alexandria:hash-table-values antennas))
+      (print (combinations nodes 2))
+      (loop for (a b) in (combinations nodes 2)
+            do (let ((diff (cons (- (car b) (car a))
+                                 (- (cdr b) (cdr a)))))
+                 (loop for c in (list (cons (- (car a) (car diff))
+                                            (- (cdr a) (cdr diff)))
+                                      (cons (+ (car b) (car diff))
+                                            (+ (cdr b) (cdr diff))))
+                       do (if (and (<= 0 (car c) n)
+                                   (<= 0 (cdr c) m))
+                              (pushnew c antinodes :test #'equal)))
+                 (loop for thing in (list (cons a -1) (cons b 1))
+                       do (let* ((c (car thing))
+                                 (sign (cdr thing)))
+                            (loop while (and (<= 0 (car c) n)
+                                             (<= 0 (cdr c) m))
+                                  do (progn
+                                       (pushnew c harmonics :test #'equal)
+                                       (setf c (cons (+ (car c) (* sign (car diff)))
+                                                     (+ (cdr c) (* sign (cdr diff))))))))))))
+    (format t "~&antinodes: ~d~%" (length antinodes))
+    (format t "~&harmomics: ~d~%" (length harmonics))))
 
-(print (part1 "input2.txt"))
+;(print (part1 "input2.txt"))
 
-(print (part1 "input0.txt"))
-(print (part1 "input1.txt"))
+;(print (part1 "input0.txt"))
+;(print (part1 "input1.txt"))
 
-(print (part2 "input0.txt"))
-(print (part2 "input1.txt"))
+(print (part2 (uiop:read-file-lines "input0.txt")))
+;(print (part2 "input1.txt"))
+
 
 
 
