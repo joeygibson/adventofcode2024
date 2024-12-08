@@ -48,6 +48,30 @@
     (list (cons (round (- x1 (* distance unit-dx))) (round (- y1 (* distance unit-dy))))
           (cons (round (+ x2 (* distance unit-dx))) (round (+ y2 (* distance unit-dy)))))))
 
+(defun plot-new-points-2 (spot1 spot2 distance width height)
+  (let* ((new-points nil)
+         (x1 (car spot1))
+         (y1 (cdr spot1))
+         (x2 (car spot2))
+         (y2 (cdr spot2))
+         (dx (- x2 x1))
+         (dy (- y2 y1))
+         (vec-length (sqrt (+ (* dx dx)
+                              (* dy dy))))
+         (unit-dx (/ dx vec-length))
+         (unit-dy (/ dy vec-length))
+         (new-a (cons (round (- x1 (* distance unit-dx))) (round (- y1 (* distance unit-dy)))))
+         (new-b (cons (round (+ x2 (* distance unit-dx))) (round (+ y2 (* distance unit-dy))))))
+    (when (in-bounds new-a width height)
+      (push new-a new-points)
+      (nconc new-points (plot-new-points-2 spot1 new-a distance width height)))
+    (when (in-bounds new-b width height)
+      (push new-b new-points)
+      (nconc new-points (plot-new-points-2 spot2 new-b distance width height)))
+    (print new-points)
+    new-points))
+
+
 (defun part1 (file-name)
   (multiple-value-bind (map antennas width height) (parse file-name)
     (let* ((antinodes nil))
@@ -70,16 +94,38 @@
                                 (push point antinodes)))))))
       (length (remove-duplicates antinodes :test #'equal)))))
 
+(defun in-bounds (point width height)
+  (and (and (>= (car point) 0)
+            (< (car point) width))
+       (and (>= (cdr point) 0)
+            (< (cdr point) height))))
+
 (defun part2 (file-name)
-  (let* ((map (parse file-name)))
-    map))
+  (multiple-value-bind (map antennas width height) (parse file-name)
+    (let* ((antinodes nil))
+      (loop for ua in antennas
+            do (let* ((this-antenna (cdr ua))
+                      (this-antenna-loc (car ua))
+                      (other-antennas (remove-if-not (lambda (other)
+                                                       (and (equal (cdr other) this-antenna)
+                                                            (not (equal (car other) this-antenna-loc))))
+                                                     antennas)))
+                 (loop for oa in other-antennas
+                       do (let* ((other-antenna-loc (car oa))
+                                 (distance (euclidean-distance-integers this-antenna-loc other-antenna-loc))
+                                 (new-points (plot-new-points-2 this-antenna-loc other-antenna-loc distance width height)))
+                            (dolist (point new-points)
+                              (when (in-bounds point width height)
+                                (push point antinodes)))))))
+      (length (remove-duplicates antinodes :test #'equal)))))
+
 
 (print (part1 "input2.txt"))
 
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
 
-; (print (part2 "input0.txt"))
+(print (part2 "input0.txt"))
 ; (print (part2 "input1.txt"))
 
 
