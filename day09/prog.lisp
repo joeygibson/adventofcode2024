@@ -48,6 +48,15 @@
                                (rotatef (nth chunk-index map) (nth empty-index map))))))))
     map))
 
+(defun get-file-chunk (map start-pos)
+  (let* ((id (nth start-pos map))
+         (file (take-while (drop map start-pos) (lambda (chr)
+                                                  (equal chr id)))))
+    file))
+
+(defun get-file-chunks (map)
+  (let (())))
+
 (defun part1 (file-name)
   (let* ((disk-map (parse file-name))
          (compact-map (compact (create-compact-map disk-map))))
@@ -57,7 +66,13 @@
           summing (* (parse-integer chunk) i))))
 
 (defun part2 (file-name)
-  (let* (( (parse file-name)))))
+  (let* ((disk-map (parse file-name))
+         (compact-map (compact-2 (create-compact-map disk-map))))
+    (loop for chunk in compact-map
+          for i from 0
+          if (not (equal chunk "."))
+          summing (* (parse-integer chunk) i))))
+
 
 (print (part1 "input0.txt"))
 (print (part1 "input1.txt"))
