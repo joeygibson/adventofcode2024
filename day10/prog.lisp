@@ -2,10 +2,9 @@
 (ql:quickload :split-sequence)
 (ql:quickload :lisp-utils)
 (ql:quickload :alexandria)
-;(ql:quickload :queues)
-(ql:quickload :damn-fast-priority-queue)
-;(require :queues.priority-queue)
 (use-package :lisp-utils)
+
+;; Solution borrowed from https://www.reddit.com/r/adventofcode/comments/1hau6hl/2024_day_10_solutions/m1cii4n/
 
 (defun parse (file-name)
   (let* ((lines (uiop:read-file-lines file-name))
@@ -17,75 +16,56 @@
                    do (setf (gethash (cons r c) map) (parse-integer col))))
     map))
 
-(defun find-spots (map fn)
+(defun find-starts (map)
   (let ((spots nil))
     (maphash (lambda (k v)
-               (when (funcall fn v)
+               (when (= v 0)
                  (push k spots)))
              map)
     spots))
 
-(defun find-starts (map)
-  (find-spots map (lambda (v)
-                    (= v 0))))
+(defun get-neighbors (pos)
+  "Return up, down, left, and right of pos"
+  (let ((r (car pos))
+        (c (cdr pos)))
+    (list (cons (1- r) c)
+          (cons (1+ r) c)
+          (cons r (1- c))
+          (cons r (1+ c)))))
 
-(defun find-ends (map)
-  (find-spots map (lambda (v)
-                    (= v 9))))
+(defun find-path (map pos ends)
+  "Recursively traverse the map, as long as the next spot's value
+is no more than 1 higher than the current value."
+  (let* ((current (gethash pos map)))
+    (if (= current 9)
+        (incf (gethash pos ends 0))
+        (dolist (neighbor (get-neighbors pos))
+          (let ((nv (gethash neighbor map -1)))
+            (when (= nv (1+ current))
+              (find-path map neighbor ends)))))))
 
-(defun update-item-in-queue (map neighbor f-score)
-  (let ((updated nil))
-    (damn-fast-priority-queue:do-queue (obj map)
-      (when (equal obj neighbor)
-        (setf updated t)))
-    updated))
+(defun discover-trails (map starts)
+  "For each starting point, find the trails that go forth from it,
+scoring and rating them as we go."
+  (let ((score 0)
+        (rating 0))
+    (dolist (start starts)
+      (let ((ends (make-hash-table :test #'equal)))
+        (find-path map start ends)
+        (incf score (length (alexandria:hash-table-keys ends)))
+        (maphash (lambda (k v)
+                   (declare (ignore k))
+                   (incf rating v))
+                 ends)))
+    (values score rating)))
 
-(defun a* (map start end neighbors-fn cost-fn heuristic-fn)
-  (let ((open-set (damn-fast-priority-queue:make-queue))
-        (came-from (make-hash-table :test #'equal))
-        (g-score (make-hash-table :test #'equal)))
-
-    (setf (gethash start g-score) 0)
-    (damn-fast-priority-queue:enqueue open-set start 0)
-
-    (labels ((reconstruct-path (current)
-               (let ((parent (gethash current came-from)))
-                 (if parent
-                     (cons current (reconstruct-path parent))
-                     (list current)))))
-      
-      (loop while (> (damn-fast-priority-queue:size open-set) 0)
-            do (multiple-value-bind (current _) (damn-fast-priority-queue:dequeue open-set)
-                 (when (equal current goal)
-                   (return-from a*
-                     (nreverse (reconstruct-path current))))
-                 
-                 (dolist (neighbor (funcall neighbors-fn current))
-                   (let* ((tentative-g-score (+ (gethash current g-score most-positive-fixnum)
-                                                (funcall cost-fn current neighbor))))
-                     (when (< tentative-g-score (gethash neighbor g-score most-positive-fixnum))
-                       (setf (gethash neighbor came-from) current)
-                       (let ((f-score (+ tentative-g-score (funcall heuristic-fn neighbor goal))))
-                         (unless (update-item-in-queue open-set neighbor f-score)
-                           (damn-fast-priority-queue:enqueue open-set neighbor f-score)))))))))))
-
-(defun part1 (file-name)
+(defun main (file-name)
   (let* ((map (parse file-name))
-         (starts (find-starts map))
-         (ends (find-ends map))
-         (trailheads (make-hash-table :test #'equal)))
-    (loop for start in starts
-          do (loop for end in ends
-                   do (a* start end )))))
+         (starts (find-starts map)))
+    (multiple-value-bind (score rating) (discover-trails map starts)
+      (format t "~&part1: ~d~%" score)
+      (format t "~&part2: ~d~%" rating))))
 
-(defun part2 (file-name)
-  (let* ((data (parse file-name)))))
-
-(print (part1 "input1.txt"))
-; (print (part1 "input1.txt"))
-
-; (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
-
+(main "input1.txt")
 
 
