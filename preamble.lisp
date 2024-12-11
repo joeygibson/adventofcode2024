@@ -29,11 +29,11 @@
 (defun part2 (file-name)
   (let* ((data (parse file-name)))))
 
-(print (part1 "input0.txt"))
-; (print (part1 "input1.txt"))
+(time (print (part1 "input0.txt")))
+; (time (print (part1 "input1.txt")))
 
-; (print (part2 "input0.txt"))
-; (print (part2 "input1.txt"))
+; (time (print (part2 "input0.txt")))
+; (time (print (part2 "input1.txt")))
 
 
 
