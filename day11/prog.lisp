@@ -62,18 +62,41 @@
                                (multiple-value-bind (left right) (split-stone stone)
                                  (push left new-stones)
                                  (push right new-stones)))
-                              (t (push (multiply stone) new-stones)))
-                        )
+                              (t (push (multiply stone) new-stones))))
                (setf stones (reverse new-stones))))
     (length stones)))
 
-(defun part2 (file-name)
-  (let* ((data (parse file-name)))))
+;; part 2 borrowed from https://www.reddit.com/r/adventofcode/comments/1hbm0al/2024_day_11_solutions/m1heyei/
+
+(defun blink (rock)
+  (let* ((rock-as-num (parse-integer rock))
+         (rock-len (length rock)))
+    (cond ((equal rock "0")
+           (list "1"))
+          ((= (mod rock-len 2) 0)
+           (let* ((middle (floor rock-len 2))
+                  (left (subseq rock 0 middle))
+                  (right (string-left-trim "0" (subseq rock middle))))
+             (list left
+                   (if (not (equal right ""))
+                       right
+                       "0"))))
+          (t (list (write-to-string (* rock-as-num 2024)))))))
+
+(defun part2 (file-name times)
+  (let* ((data (parse file-name))
+         (stones (make-hash-table :test #'equal)))
+    (loop for stone in data
+          do (incf (gethash stone stones 0)))
+
+    (loop repeat times
+          do (let ((new-stones (make-hash-table :test #'equal)))
+               (maphash (lambda (stone count)
+                          (loop for new-stone in (blink stone)
+                                do (incf (gethash new-stone new-stones 0) count)))
+                        stones)
+               (setf stones new-stones)))
+    (reduce #'+ (loop for v being the hash-values of stones collecting v))))
 
 (print (part1 "input1.txt" 25))
-
-
-                                        ; (print (part1 "input1.txt"))
-
-                                        ; (print (part2 "input0.txt"))
-                                        ; (print (part2 "input1.txt"))
+(print (part2 "input1.txt" 75))
