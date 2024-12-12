@@ -3,10 +3,8 @@
 (ql:quickload :lisp-utils)
 (ql:quickload :alexandria)
 
-; (ql:quickload :queues)
-
-; (require :queues.simple-queue)
-
+(require :sb-concurrency)
+(use-package :sb-concurrency)
 
 (use-package :lisp-utils)
 
