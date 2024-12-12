@@ -58,18 +58,7 @@
         if (member plot region :test #'equal)
           return t))
 
-(defun part1 (file-name)
-  (multiple-value-bind (map width height) (parse-to-grid file-name)
-    (let* ((regions nil)
-           (sides nil))
-      (loop for plot being the hash-keys of map
-            if (not (in-region-p regions plot))
-            do (multiple-value-bind (region region-sides) (flood-fill map plot width height)
-                 (push region regions)
-                 (push region-sides sides)))
-      (reduce #'+ (loop for region in regions
-             for side in sides
-             collecting (* (length region) side))))))
+; this function is adapted from https://github.com/meier-andersen/AoC/blob/main/src/code/2024/12/code/2.js
 
 (defun count-corners (region)
   (let ((sides 0))
@@ -126,19 +115,27 @@
           (incf sides))))
     sides))
 
-(defun part2 (file-name)
-  (multiple-value-bind (map width height) (parse-to-grid file-name)
-    (let* ((regions nil)
-           (sides nil))
-      (loop for plot being the hash-keys of map
-            if (not (in-region-p regions plot))
+(defun do-the-work (map width height &key is-part-2)
+  (let* ((regions nil)
+         (sides nil))
+    (loop for plot being the hash-keys of map
+          if (not (in-region-p regions plot))
             do (multiple-value-bind (region region-sides) (flood-fill map plot width height)
                  (push region regions)
                  (push region-sides sides)))
-      (reduce #'+ (loop for region in (reverse regions)
-             for side in sides
-             collecting (* (count-corners region) (length region)))))))
+    (reduce #'+ (loop for region in regions
+                      for side in sides
+                      collecting (* (length region) (if is-part-2
+                                                        (count-corners region)
+                                                        side))))))
 
+(defun part1 (file-name)
+  (multiple-value-bind (map width height) (parse-to-grid file-name)
+    (do-the-work map width height)))
+
+(defun part2 (file-name)
+  (multiple-value-bind (map width height) (parse-to-grid file-name)
+    (do-the-work map width height :is-part-2 t)))
 
 (time (print (part1 "input0.txt")))
 (time (print (part1 "input2.txt")))
