@@ -76,6 +76,22 @@
           (+ (* 3 n-a) n-b)
           0))))
 
+; this implementation of Cramer's Rule borrowed from https://www.reddit.com/r/adventofcode/comments/1hd7irq/2024_day_13_an_explanation_of_the_mathematics/
+(defmethod cramer ((self claw))
+  (with-slots (a-x a-y b-x b-y prize-x prize-y) self
+    (let* ((a (truncate (- (* prize-x b-y)
+                           (* prize-y b-x))
+                        (- (* a-x b-y)
+                           (* a-y b-x))))
+           (b (truncate (- (* a-x prize-y)
+                           (* a-y prize-x))
+                        (- (* a-x b-y)
+                           (* a-y b-x)))))
+      (if (and (= (+ (* a a-x) (* b b-x)) prize-x)
+               (= (+ (* a a-y) (* b b-y)) prize-y))
+          (+ (* a 3) b)
+          0))))
+
 (defun compute-cost (result)
   (let* ((a (car result))
          (b (cadr result)))
@@ -95,7 +111,7 @@
   (let* ((machines (create-claw-machines file-name :is-part-2 t))
          (winners nil))
     (dolist (machine machines)
-      (let ((result (determine-button-presses-huge machine)))
+      (let ((result (cramer machine)))
         (when result
           (push result winners))))
     (reduce #'+ winners)))
