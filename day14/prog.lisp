@@ -10,8 +10,8 @@
 
 (defconstant room-width 101)
 (defconstant room-height 103)
-(defconstant vertical-room-divider 51)
-(defconstant horizontal-room-divider 52)
+(defconstant vertical-room-divider (floor room-width 2))
+(defconstant horizontal-room-divider (floor room-height 2))
 
 (defclass robot ()
   ((x :initarg :x :accessor x :type integer)
@@ -32,23 +32,10 @@
 
 (defmethod move ((self robot))
   (with-slots (x y dx dy) self
-    (let* ((new-x (+ x dx))
-           (new-y (+ y dy)))
-      (cond ((< new-x 0)
-             (setf new-x (- room-width new-x)))
-            ((> new-x room-width)
-             (setf new-x (- new-x room-width))))
-      (cond ((< new-y 0)
-             (setf new-y (- room-height new-y)))
-            ((> new-y room-height)
-             (setf new-y (- new-y room-height))))
+    (let* ((new-x (mod (+ x dx) room-width))
+           (new-y (mod (+ y dy) room-height)))
       (setf x new-x)
       (setf y new-y))))
-
-(defmethod in-quadrant-p ((self robot) start-x end-x start-y end-y)
-  (with-slots (x y) self
-    (and (<= start-x x end-x)
-         (<= start-y y end-y))))
 
 (defun parse (file-name)
   (let* ((lines (uiop:read-file-lines file-name)))
@@ -59,40 +46,25 @@
 
 (defun part1 (file-name)
   (let* ((robots (parse file-name))
-         (top-left nil)
-         (top-right nil)
-         (bottom-left nil)
-         (bottom-right))
-    ;(format t "~&~{~a~%~}" robots)
-    (loop for i upto 100
+         (quads (make-hash-table :test #'equal)))
+    (loop for i below 100
           do (loop for r in robots
                    do (move r)))
-    ;(format t "~&~{~a~%~}" robots)
     (loop for r in robots
-          do (cond ((and (>= (x r) 0)
-                         (< (x r) vertical-room-divider)
-                         (>= (y r) 0)
-                         (< (y r) horizontal-room-divider))
-                    (push r top-left))
-                   ((and (> (x r) vertical-room-divider)
-                         (<= (x r) room-width)
-                         (>= (y r) 0)
-                         (< (y r) horizontal-room-divider))
-                    (push r top-right))
-                   ((and (>= (x r) 0)
-                         (< (x r) vertical-room-divider)
-                         (> (y r) horizontal-room-divider)
-                         (<= (y r) room-height))
-                    (push r bottom-left))
-                   ((and (> (x r) vertical-room-divider)
-                         (<= (x r) room-width)
-                         (> (y r) horizontal-room-divider)
-                         (<= (y r) room-height))
-                    (push r bottom-right))))
-    (reduce #'+ (list (length top-left)
-                      (length top-right)
-                      (length bottom-left)
-                      (length bottom-right)))))
+          do (progn
+               ;(print r)
+               (let ((x-quad (cond ((< (x r) vertical-room-divider)
+                                   0)
+                                  ((> (x r) vertical-room-divider)
+                                   1)))
+                    (y-quad (cond ((< (y r) horizontal-room-divider)
+                                   0)
+                                  ((> (y r) horizontal-room-divider)
+                                   1))))
+                (when (and x-quad y-quad)
+                  (incf (gethash (cons x-quad y-quad) quads 0))))))
+    (print (alexandria:hash-table-values quads))
+    (reduce #'* (alexandria:hash-table-values quads))))
 
 (defun part2 (file-name)
   (let* ((data (parse file-name)))))
@@ -102,12 +74,5 @@
 
 ; (time (print (part2 "input0.txt")))
 ; (time (print (part2 "input1.txt")))
-
-(let ((r (make-robot '(100 102 2 2))))
-  (print r)
-  (move r)
-  (print r))
-
-
 
 
