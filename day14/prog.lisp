@@ -95,8 +95,8 @@
     (let ((sorted-iter-counts (sort (alexandria:hash-table-alist iter-counts) #'> :key #'cdr)))
       (caar sorted-iter-counts))))
 
-;(time (print (part1 "input0.txt")))
-;(time (print (part1 "input1.txt")))
+; (time (print (part1 "input0.txt")))
+(time (print (part1 "input1.txt")))
 
 (time (print (part2 "input1.txt")))
 
