@@ -37,6 +37,10 @@
       (setf x new-x)
       (setf y new-y))))
 
+(defmethod coords ((self robot))
+  (with-slots (x y) self
+      (cons x y)))
+
 (defun parse (file-name)
   (let* ((lines (uiop:read-file-lines file-name)))
     (mapcar (lambda (line)
@@ -66,13 +70,33 @@
     (print (alexandria:hash-table-values quads))
     (reduce #'* (alexandria:hash-table-values quads))))
 
+(defun get-neighbors (x y)
+  (list (cons (1- x) y)
+        (cons (1+ x) y)
+        (cons x (1- y))
+        (cons x (1+ y))))
+
 (defun part2 (file-name)
-  (let* ((data (parse file-name)))))
+  (let* ((robots (parse file-name))
+         (iter-counts (make-hash-table)))
+    (loop for i from 1 to 10403
+          do (let* ((map (make-hash-table :test #'equal)))
+               (loop for r in robots
+                     do (progn
+                          (move r)
+                          (setf (gethash (coords r) map 0) t)))
+               
+               (loop for (x . y) in (alexandria:hash-table-keys map)
+                     do (progn
+                          (loop for neighbor in (get-neighbors x y)
+                               when (gethash neighbor map)
+                                 do (incf (gethash i iter-counts 0)))))))
+    
+    (let ((sorted-iter-counts (sort (alexandria:hash-table-alist iter-counts) #'> :key #'cdr)))
+      (caar sorted-iter-counts))))
 
-(time (print (part1 "input0.txt")))
-(time (print (part1 "input1.txt")))
+;(time (print (part1 "input0.txt")))
+;(time (print (part1 "input1.txt")))
 
-; (time (print (part2 "input0.txt")))
-; (time (print (part2 "input1.txt")))
-
+(time (print (part2 "input1.txt")))
 
