@@ -89,7 +89,7 @@
                     (rotatef (subseq map chunk-start (1+ chunk-end))
                              (subseq map empty-start (+ empty-start chunk-length)))
                     (if (= chunk-length empty-length)
-                        (setf empty-chunks (remove available-empty-chunk empty-chunks))
+                        (setf empty-chunks (remove available-empty-chunk empty-chunks :count 1))
                         (let* ((empty-pos (position available-empty-chunk empty-chunks))
                                (new-start (+ empty-start chunk-length))
                                (new-empty-chunk (cons (cadr available-empty-chunk)
