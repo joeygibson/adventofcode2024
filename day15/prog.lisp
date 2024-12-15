@@ -71,19 +71,26 @@
           summing (+ (* (car pos) 100)
                      (cdr pos))))
 
+(defun sort-cons-list-by-car-and-cdr (cons-list)
+  "Sorts a list of cons cells by car first, then by cdr."
+  (sort (copy-list cons-list)
+        (lambda (a b)
+          (or (> (car a) (car b))
+              (and (= (car a) (car b))
+                   (> (cdr a) (cdr b)))))))
+
 (defun part1 (file-name)
   (multiple-value-bind (grid moves) (parse file-name)
-    (let* ((robot (loop for pos being the hash-keys of grid
+    (let* ((dimensions (first (sort-cons-list-by-car-and-cdr (alexandria:hash-table-keys grid))))
+           (robot (loop for pos being the hash-keys of grid
                         using (hash-value val)
                         if (equal val "@")
                           return pos)))
-      (print-grid grid 8 8)
+      (print-grid grid (1+ (car dimensions)) (1+ (cdr dimensions)))
       (loop for dir in moves
             do (let ((new-pos (move-forward robot dir grid)))
-                 (setf robot new-pos)
-                 ;(print-grid grid 8 8)
-                 ))
-      (print-grid grid 8 8)
+                 (setf robot new-pos)))
+      (print-grid grid (1+ (car dimensions)) (1+ (cdr dimensions)))
       (compute-gps grid))))
 
 (defun part2 (file-name)
