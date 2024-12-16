@@ -55,7 +55,8 @@
          (came-from (make-hash-table :test #'equal))
          (g-score (make-hash-table :test #'equal))
          (f-score (make-hash-table :test #'equal))
-         (previous nil))
+         (previous (cons (car start)
+                         (1- (cdr start)))))
     (setf (gethash start g-score) 0)
     (setf (gethash start f-score) (funcall heuristic start goal))
 
@@ -85,7 +86,6 @@
                      (when (< tentative-g-score
                               (or (gethash neighbor g-score) most-positive-fixnum))
                        (setf (gethash neighbor came-from) current)
-                       (setf previous current)
                        (setf (gethash neighbor g-score) tentative-g-score)
 
                        (let ((neighbor-f-score
@@ -94,34 +94,42 @@
 
                          (if neighbor-in-open
                              (setf (cdr neighbor-in-open) neighbor-f-score)
-                             (push (cons neighbor neighbor-f-score) open-set)))))))))
+                             (push (cons neighbor neighbor-f-score) open-set)))))))
+               (setf previous current)))
     nil))
 
 (defun direction (from to)
   (cond ((= (car from) (car to))
-         (if (> (cdr to) (cdr from)) 'north 'south))
+         (if (> (cdr to) (cdr from)) 'east 'west))
         ((= (cdr from) (cdr to))
-         (if (> (car to)) (car from)) 'east 'west)))
+         (if (> (car to)) (car from)) 'north 'south)))
 
 (defun is-straight-or-turn (previous current next)
   (let ((prev-dir (direction previous current))
         (curr-dir (direction current next)))
     (cond ((or (null prev-dir)
                (null curr-dir))
+           (format t "~&p: ~a, c: ~a, n: ~a, pd: ~a, cd: ~a -> ~a~%" previous current next prev-dir curr-dir "invalid")
            :invalid)
           ((eq prev-dir curr-dir)
+           (format t "~&p: ~a, c: ~a, n: ~a, pd: ~a, cd: ~a -> ~a~%" previous current next prev-dir curr-dir "straight")
            :staight)
           (t
+           (format t "~&p: ~a, c: ~a, n: ~a, pd: ~a, cd: ~a -> ~a~%" previous current next prev-dir curr-dir "turn")
            :turn))))
 
 (defun compute-cost (previous current neighbor)
+  (format t "~&~tCC| p: ~a, c: ~a, n: ~a~%" previous current neighbor)
   (if (null previous)
       1
-      (if (eql (is-straight-or-turn previous current neighbor) :straight)
-          1
-          1000)))
+      (let ((dir (is-straight-or-turn previous current neighbor)))
+        (cond ((equal dir :straight)
+               1)
+              ((equal dir :turn)
+               1001)
+              (t
+               1)))))
 
-; remember to reverse the path before computing total cost
 (defun part1 (file-name)
   (let* ((maze (parse-to-grid file-name)))
     (multiple-value-bind (start end) (find-start-and-end maze)
@@ -129,15 +137,17 @@
       (let ((path (reverse (a* start end maze #'grid-neighbors #'compute-cost #'manhattan-distance))))
         (print path)
         (print (length path))
-        (let ((previous nil)
+        (let ((previous (cons (car start)
+                              (1- (cdr start))))
               (total-cost 0))
           (loop for (a b) in (pairwise path)
                 do (let* ((cost (compute-cost previous a b)))
+                     (format t "~&p: ~a, a: ~a, b: ~a, cost: ~a" previous a b cost)
                      (incf total-cost cost)
                      (setf previous a)))
           total-cost)))))
 
-(time (print (part1 "input0.txt")))
+(time (print (part1 "input2.txt")))
 ; (time (print (part1 "input1.txt")))
 
 ; (time (print (part2 "input0.txt")))
