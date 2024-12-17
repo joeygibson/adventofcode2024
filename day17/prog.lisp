@@ -60,8 +60,7 @@
   (setf *B* (logxor *B* *C*)))
 
 (defun out (operand)
-  (push (mod (handle-operand operand) 8) *OUTPUT-BUFFER*)
-  (print *OUTPUT-BUFFER*))
+  (push (mod (handle-operand operand) 8) *OUTPUT-BUFFER*))
 
 (defun bdv (operand)
   (let* ((numerator *A*)
@@ -76,7 +75,6 @@
     (setf *C* (floor numerator denominator))))
 
 (defun process (opcode operand)
-  (format t "~&opcode: ~a, operand: ~a~%" opcode operand)
   (let ((ptr-inc (cond ((= opcode 0)
                         (adv operand))
                        ((= opcode 1)
@@ -98,30 +96,27 @@
         (setf *INT-PTR* ptr-inc)
         (incf *INT-PTR* 2))))
 
-(defun interpret ()
+(defun interpret (instructions a-val b-val c-val)
+  (setf *A* a-val)
+  (setf *B* b-val)
+  (setf *C* c-val)
+  (setf *PROGRAM* instructions)
+  (setf *PROGRAM-LENGTH* (length instructions))
+  
   (loop named interpreter
         do (progn
              (when (>= *INT-PTR* *PROGRAM-LENGTH*)
                (return-from interpreter))
              (let* ((opcode (nth *INT-PTR* *PROGRAM*))
                     (operand (nth (1+ *INT-PTR*) *PROGRAM*)))
-               (process opcode operand)
-               (format t "~&INT: ~a~%" *INT-PTR*))))
-  (if *OUTPUT-BUFFER*
-      (format t "~&OUTPUT: ~a~%" (join-strings (reverse *OUTPUT-BUFFER*)))))
+               (process opcode operand)))))
 
 (defun part1 (file-name)
-  (multiple-value-bind (instructions a-val b-val c-val) (parse file-name)
-    (setf *A* a-val)
-    (setf *B* b-val)
-    (setf *C* c-val)
-    (setf *PROGRAM* instructions)
-    (setf *PROGRAM-LENGTH* (length instructions))
-    
-    (interpret)
-    (format t "~&A: ~a, B: ~a, C: ~a~%" *A* *B* *C*)))
+  (multiple-value-bind (instructions a-val b-val c-val) (parse file-name)    
+    (interpret instructions a-val b-val c-val)
+    (format t "~&A: ~a, B: ~a, C: ~a, OUTPUT: ~a~%" *A* *B* *C* (join-strings (reverse *OUTPUT-BUFFER*)))))
 
-(time (print (part1 "input1.txt")))
+(time (print (part1 "input0.txt")))
 ; (time (print (part1 "input1.txt")))
 
 ; (time (print (part2 "input0.txt")))
