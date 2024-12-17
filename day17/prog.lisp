@@ -100,9 +100,11 @@
   (setf *A* a-val)
   (setf *B* b-val)
   (setf *C* c-val)
+  (setf *INT-PTR* 0)
   (setf *PROGRAM* instructions)
   (setf *PROGRAM-LENGTH* (length instructions))
-  
+  (setf *OUTPUT-BUFFER* nil)
+
   (loop named interpreter
         do (progn
              (when (>= *INT-PTR* *PROGRAM-LENGTH*)
@@ -111,16 +113,37 @@
                     (operand (nth (1+ *INT-PTR*) *PROGRAM*)))
                (process opcode operand)))))
 
+(defun get-output (&optional input)
+  (join-strings (if input
+                    input
+                    (reverse *OUTPUT-BUFfER*))))
+
 (defun part1 (file-name)
   (multiple-value-bind (instructions a-val b-val c-val) (parse file-name)    
     (interpret instructions a-val b-val c-val)
-    (format t "~&A: ~a, B: ~a, C: ~a, OUTPUT: ~a~%" *A* *B* *C* (join-strings (reverse *OUTPUT-BUFFER*)))))
+    (format t "~&A: ~a, B: ~a, C: ~a, OUTPUT: ~a~%" *A* *B* *C* (get-output))))
 
-(time (print (part1 "input0.txt")))
-; (time (print (part1 "input1.txt")))
+(defun part2 (file-name)
+  (multiple-value-bind (instructions a-val b-val c-val) (parse file-name)    
+    (let ((instr-seq (reverse instructions)))
+      (loop while (not (equal *OUTPUT-BUFFER* instr-seq))
+            for i from 0
+            do (progn
+                 (when (= (mod i 1000000) 0)
+                   (print i))
+                 (interpret instructions i b-val c-val)
+                 ;(format t "~&~a -> ~a~%" (get-output) instr-str)
+                 )))
+    
+    (format t "~&A: ~a, B: ~a, C: ~a, OUTPUT: ~a~%" *A* *B* *C* (get-output))))
 
-; (time (print (part2 "input0.txt")))
-; (time (print (part2 "input1.txt")))
+
+;(time (print (part1 "input0.txt")))
+
+                                        ; (time (print (part1 "input1.txt")))
+
+(time (print (part2 "input1.txt")))
+                                        ; (time (print (part2 "input1.txt")))
 
 
 
