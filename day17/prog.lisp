@@ -129,11 +129,8 @@
       (loop while (not (equal *OUTPUT-BUFFER* instr-seq))
             for i from 0
             do (progn
-                 (when (= (mod i 1000000) 0)
-                   (print i))
                  (interpret instructions i b-val c-val)
-                 ;(format t "~&~a -> ~a~%" (get-output) instr-str)
-                 )))
+                 (format t "~&~a: ~a -> ~a~%" i (get-output) instr-seq))))
     
     (format t "~&A: ~a, B: ~a, C: ~a, OUTPUT: ~a~%" *A* *B* *C* (get-output))))
 
