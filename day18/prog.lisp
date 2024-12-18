@@ -111,11 +111,27 @@
           do (progn
                ;(format t "~&~a|~a~%" x y)
                (setf (gethash (cons x y) ram) "#")))
-    (print-grid ram size size)
     (1- (length (a-star start end ram #'grid-neighbors #'compute-cost #'manhattan-distance)))))
 
+(defun part2 (file-name)
+  (let* ((byte-data (parse file-name))
+         (size (if (equal file-name "input0.txt")
+                   6
+                   70))
+         (start (cons 0 0))
+         (end (cons size size))
+         (ram (create-ram-map size)))
+    (loop named byte-fall
+          for (x y) in byte-data
+          do (progn
+               (setf (gethash (cons x y) ram) "#")
+               (if (not (a-star start end ram #'grid-neighbors #'compute-cost #'manhattan-distance))
+                   (return-from byte-fall (format nil "~a,~a" x y)))))))
 
+(time (print (part1 "input0.txt")))
 (time (print (part1 "input1.txt")))
+(time (print (part2 "input0.txt")))
+(time (print (part2 "input1.txt")))
 
 
 
