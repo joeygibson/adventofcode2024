@@ -1,11 +1,11 @@
-(ql:quickload :cl-ppcre)
-(ql:quickload :split-sequence)
-(ql:quickload :lisp-utils)
-(ql:quickload :alexandria)
+;(require :sb-concurrency)
+;(use-package :sb-concurrency)
 
-(require :sb-concurrency)
-(use-package :sb-concurrency)
-
+(require :cl-ppcre)
+(require :split-sequence)
+(require :lisp-utils)
+(require :alexandria)
+(require :lisp-utils)
 (use-package :lisp-utils)
 
 (defun parse-to-grid (file-name &optional (fn #'identity))
@@ -27,11 +27,9 @@
 (defun part2 (file-name)
   (let* ((data (parse file-name)))))
 
-(time (print (part1 "input0.txt")))
-; (time (print (part1 "input1.txt")))
-
-; (time (print (part2 "input0.txt")))
-; (time (print (part2 "input1.txt")))
-
+(time (format t "~&part1: ~a~%" (part1 "input0.txt")))
+(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
+(time (format t "~&part2: ~a~%" (part2 "input0.txt")))
+(time (format t "~&part2: ~a~%" (part2 "input1.txt")))
 
 

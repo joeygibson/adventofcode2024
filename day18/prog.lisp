@@ -1,11 +1,5 @@
-(ql:quickload :cl-ppcre)
-(ql:quickload :split-sequence)
-(ql:quickload :lisp-utils)
-(ql:quickload :alexandria)
-
-(require :sb-concurrency)
-(use-package :sb-concurrency)
-
+(require :cl-ppcre)
+(require :lisp-utils)
 (use-package :lisp-utils)
 
 (defun parse (file-name)
@@ -97,6 +91,7 @@
     nil))
 
 (defun compute-cost (a b)
+  (declare (ignore a b))
   1)
 
 (defun part1 (file-name)
@@ -104,13 +99,14 @@
          (size (if (equal file-name "input0.txt")
                    6
                    70))
+         (bytes-to-map (if (equal file-name "input0.txt")
+                           12
+                           1024))
          (start (cons 0 0))
          (end (cons size size))
          (ram (create-ram-map size)))
-    (loop for (x y) in (take byte-data 1024)          
-          do (progn
-               ;(format t "~&~a|~a~%" x y)
-               (setf (gethash (cons x y) ram) "#")))
+    (loop for (x y) in (take byte-data bytes-to-map)          
+          do (setf (gethash (cons x y) ram) "#"))
     (1- (length (a-star start end ram #'grid-neighbors #'compute-cost #'manhattan-distance)))))
 
 (defun part2 (file-name)
@@ -128,11 +124,9 @@
                (if (not (a-star start end ram #'grid-neighbors #'compute-cost #'manhattan-distance))
                    (return-from byte-fall (format nil "~a,~a" x y)))))))
 
-(time (print (part1 "input0.txt")))
-(time (print (part1 "input1.txt")))
-(time (print (part2 "input0.txt")))
-(time (print (part2 "input1.txt")))
-
-
+(time (format t "~&part1: ~a~%" (part1 "input0.txt")))
+(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
+(time (format t "~&part2: ~a~%" (part2 "input0.txt")))
+(time (format t "~&part2: ~a~%" (part2 "input1.txt")))
 
 
