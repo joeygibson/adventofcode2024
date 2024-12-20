@@ -79,26 +79,26 @@
     (setf (gethash wall map-copy) ".")
     map-copy))
 
+(defun compute-cost (a b)
+  (declare (ignore a b))
+  1)
+
 (defun part1 (file-name)
-  (multiple-value-bind (map start end height width) (parse-to-grid file-name)
-    (let* ((path (reverse (a-star start end map #'grid-neighbors #'(lambda (a b) 1) #'manhattan-distance #'(lambda (a) (equal a "#")))))
+  (multiple-value-bind (map start end) (parse-to-grid file-name)
+    (let* ((path (reverse (a-star start end map #'grid-neighbors #'compute-cost #'manhattan-distance #'(lambda (a) (equal a "#")))))
            (path-length (1- (length path)))
            (cheats (make-hash-table :test #'equal)))
-      (format t "~&path: ~a~%path-length: ~a~%" path path-length)
       (loop for node in path
             do (progn
                  (loop for wall in (find-cheatable-walls map node)
                        do (let* ((map-copy (break-wall map wall))
-                                 (new-path (a-star start end map-copy #'grid-neighbors #'(lambda (a b) 1) #'manhattan-distance #'(lambda (a) (equal a "#"))))
+                                 (new-path (a-star start end map-copy #'grid-neighbors #'compute-cost #'manhattan-distance #'(lambda (a) (equal a "#"))))
                                  (new-path-length (1- (length new-path))))
-                                        ;(print-grid map-copy (1- width) (1- height))
-                                        ;(format t "~&new-path: ~a~%new-path-length: ~a~%" new-path new-path-length)
-                            ;(format t "~&cheatable-wall: ~a, diff: ~a~%" wall (- path-length new-path-length))
                             (setf (gethash wall cheats) new-path-length)))))
       (let* ((keys (alexandria:hash-table-keys cheats)))
         (loop for k in keys
-              do (when (>= (- path-length (gethash k cheats)) 100)
-                   (format t "~&X~a: ~a, diff: ~a~%" k (gethash k cheats) (- path-length (gethash k cheats)))))))))
+              if (>= (- path-length (gethash k cheats)) 100)
+                counting k)))))
 
 ;(remove-if-not (lambda (a) (equal (cons 7 1) a)) path)
 
