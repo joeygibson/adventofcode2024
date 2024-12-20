@@ -81,32 +81,28 @@
 
 (defun part1 (file-name)
   (multiple-value-bind (map start end height width) (parse-to-grid file-name)
-                                        ;(print-grid map (1- width) (1- height))
     (let* ((path (reverse (a-star start end map #'grid-neighbors #'(lambda (a b) 1) #'manhattan-distance #'(lambda (a) (equal a "#")))))
            (path-length (1- (length path)))
            (cheats (make-hash-table :test #'equal)))
       (format t "~&path: ~a~%path-length: ~a~%" path path-length)
       (loop for node in path
             do (progn
-                 ;(format t "~&NODE: ~a~%" node)
                  (loop for wall in (find-cheatable-walls map node)
-                      do (progn
-                           ;(format t "~&cheatable-wall: ~a~%" wall)
-                           (let* ((map-copy (break-wall map wall))
-                                  (new-path (a-star start end map-copy #'grid-neighbors #'(lambda (a b) 1) #'manhattan-distance #'(lambda (a) (equal a "#"))))
-                                  (new-path-length (1- (length new-path))))
-                             ;(print-grid map-copy (1- width) (1- height))
-                             ;(format t "~&new-path: ~a~%new-path-length: ~a~%" new-path new-path-length)
-                             (format t "~&cheatable-wall: ~a, diff: ~a~%" wall (- path-length new-path-length))
-                             (incf (gethash (- path-length new-path-length) cheats 0)))))))
-      (let* ((keys (sort (alexandria:hash-table-keys cheats) #'<)))
+                       do (let* ((map-copy (break-wall map wall))
+                                 (new-path (a-star start end map-copy #'grid-neighbors #'(lambda (a b) 1) #'manhattan-distance #'(lambda (a) (equal a "#"))))
+                                 (new-path-length (1- (length new-path))))
+                                        ;(print-grid map-copy (1- width) (1- height))
+                                        ;(format t "~&new-path: ~a~%new-path-length: ~a~%" new-path new-path-length)
+                            ;(format t "~&cheatable-wall: ~a, diff: ~a~%" wall (- path-length new-path-length))
+                            (setf (gethash wall cheats) new-path-length)))))
+      (let* ((keys (alexandria:hash-table-keys cheats)))
         (loop for k in keys
-              if (/= k 0)
-              do (format t "~&~a: ~a~%" k (gethash k cheats)))))))
+              do (when (>= (- path-length (gethash k cheats)) 100)
+                   (format t "~&X~a: ~a, diff: ~a~%" k (gethash k cheats) (- path-length (gethash k cheats)))))))))
 
 ;(remove-if-not (lambda (a) (equal (cons 7 1) a)) path)
 
-(time (format t "~&part1: ~a~%" (part1 "input0.txt")))
+(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
 ;; (time (format t "~&part1: ~a~%" (part1 "input1.txt")))
 ;; (time (format t "~&part2: ~a~%" (part2 "input0.txt")))
 ;; (time (format t "~&part2: ~a~%" (part2 "input1.txt")))
