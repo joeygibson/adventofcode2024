@@ -81,7 +81,7 @@
                (push complexity complexities)))
     (reduce #'+ complexities)))
 
-(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
+(time (format t "~&part1: ~a~%" (part1 "input0.txt")))
 
 
 
