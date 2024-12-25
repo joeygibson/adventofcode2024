@@ -39,12 +39,16 @@
     (loop for (a b) in pairs
           collecting (- b a))))
 
-(defun find-pattern (numbers diffs)
-  (let* ((max-value (apply #'max numbers))
-         (max-pos (second (loop for value in numbers
-                                for i from 0
-                                if (= value max-value)
-                                  collecting i))))
+(defun find-pattern (prices diffs)
+  (let* ((max-price (apply #'max prices))
+         (max-positions (loop for price in prices
+                              for index from 0
+                              when (= price max-price)
+                                collecting index))
+         (max-pos (if (>= (first max-positions) 4)
+                      (first max-positions)
+                      (second max-positions))))
+    (format t "~&~a, ~a~%" max-price max-pos)
     (subseq diffs (- max-pos 3) (1+ max-pos))))
 
 (defun part1 (file-name)
@@ -59,23 +63,11 @@
          (diffs (compute-differences (cons (first real-prices) real-prices)))
          (pattern (find-pattern real-prices diffs))
          (vendor (make-hash-table)))
-    ;; (format t "~&secrets: ~a~%" (take secrets 10))
-    ;; (format t "~&prices : ~a~%" (take real-prices 10))
-    ;; (format t "~&diffs  : ~a~%" (take diffs 10))
-    ;; (format t "~&pattern: ~a~%" pattern)
     (setf (gethash 'secrets vendor) secrets)
     (setf (gethash 'prices vendor) real-prices)
     (setf (gethash 'diffs vendor) diffs)
     (setf (gethash 'pattern vendor) pattern)
     vendor))
-
-(defun find-sequencexx (pattern list)
-  (when (subsetp pattern list)
-    (let ((start-index (position (car pattern) list :test #'equal)))
-      (print 'BAR)
-      (when (equal pattern (subseq list start-index (+ start-index (length pattern))))
-        (print 'FOO)
-        (+ start-index 4)))))
 
 (defun find-sequence (subset list)
   "Find the starting index of SUBSET in LIST if it appears sequentially and in order.
@@ -84,7 +76,7 @@
     (loop for i from 0 to (- (length list) subset-length)
           for sublist = (subseq list i (+ i subset-length))
           when (equal sublist subset)
-          do (return i))))
+          do (return (+ i 3)))))
 
 (defun part2 (file-name)
   (let* ((initial-secrets (parse file-name))
@@ -97,14 +89,16 @@
           do (setf (gethash i vendors) (handle-vendor i secret)))
 
     (loop for vendor in (alexandria:hash-table-values vendors)
+          for vi from 0
           do (let ((pattern (gethash 'pattern vendor))
                    (current-value 0))
-               (format t "~&vendor: ~a, pattern: ~a~%" (gethash 'pattern vendor) pattern)
-               (loop for other-vendor in (alexandria:hash-table-values vendors)
-                     do (let ((other-pos (find-sequence pattern (gethash 'diffs other-vendor))))
-                          (when other-pos
-                            (incf current-value (nth other-pos (gethash 'prices other-vendor)))
-                            (print current-value))))
+               (loop for other in (alexandria:hash-table-values vendors)
+                     for oi from 0
+                     do (let* ((index (find-sequence pattern (gethash 'diffs other))))
+                          (format t "~&v: ~a, p: ~a, o: ~a, i: ~a~%" vi pattern oi index)
+                          (when index
+                            (incf current-value (nth index (gethash 'prices other))))))
+               (format t "~&v: ~a, cv: ~a~%" vi current-value)
                (when (> current-value best-value)
                  (setf best-value current-value)
                  (setf best-pattern pattern))))
@@ -112,25 +106,16 @@
 
 (time (format t "~&part1: ~a~%" (part2 "input0.txt")))
 
-(let ((vendor (handle-vendor 1 1)))
-  (print (gethash 'pattern vendor))
-  (print (find-sequence (gethash 'pattern vendor)
-                        (gethash 'diffs vendor)))
-  (print (nth 2 (gethash 'prices vendor))))
-
-;; (let* ((secrets (reverse (compute-secrets 1 123 2000)))
-;;        (real-prices (mapcar (lambda (secret) (extract-real-price secret)) (take secrets 10)))
-;;        (diffs (compute-differences (cons (first real-prices) real-prices)))
-;;        (pattern (find-pattern real-prices diffs)))
-;;   (format t "~&secrets: ~a~%" (take secrets 10))
-;;   (format t "~&prices : ~a~%" (take real-prices 10))
-;;   (format t "~&diffs  : ~a~%" (take diffs 10))
-;;   (format t "~&pattern: ~a~%" pattern))
-
-
-
-;(time (format t "~&part1: ~a~%" (part1 "input0.txt")))
-;(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
+(let* ((vendor (handle-vendor 999 2024))
+       (max-price (apply #'max (gethash 'prices vendor)))
+       (positions (loop for price in (gethash 'prices vendor)
+                        for i from 0
+                        when (= price max-price)
+                          collect i)))
+  (loop for pos in positions
+        when (> pos 4)
+        do (format t "~&~a, ~a, ~a~%" pos (nth pos (gethash 'prices vendor))
+                   (subseq (gethash 'diffs vendor) (- pos 3) (1+ pos)))))
 
 
 
