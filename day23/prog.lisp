@@ -65,8 +65,40 @@
                                         combo))
                              matches)))))
 
-(time (format t "~&part1: ~a~%" (part1 "input0.txt")))
-(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
+(defun part2 (file-name)
+  (let* ((map (make-hash-table :test #'equal))
+         (sn nil)
+         (counts (make-hash-table :test #'equal)))
+    (loop for (a b) in (parse file-name)
+          do (progn
+               (push b (gethash a map))
+               (push a (gethash b map))))
+    
+    (loop for (k . v) in (alexandria:hash-table-alist map)
+          do (let ((tmp-v (remove-duplicates v)))
+               (push k tmp-v)
+               (push (remove-duplicates tmp-v) sn)))
+
+    (print (length sn))
+    
+    (loop for i upto (length sn)
+          do (loop for j from (1+ i) upto (length sn)
+                   do (let* ((p1 (nth i sn))
+                             (p2 (nth j sn))
+                             (int (intersection p1 p2 :test #'equal))
+                             (sorted (sort int #'string-lessp)))
+                        (when (> (length int) 10)
+                          (incf (gethash sorted counts 0))))))
+    
+    (print (length (alexandria:hash-table-keys counts)))
+    
+    (loop for (k . v) in (alexandria:hash-table-alist counts)
+          when (= (floor (* (length k) (1- (length k))) 2) v)
+            collecting k)))
+
+(time (format t "~&part2: ~a~%" (part2 "input1.txt")))
+;; (time (format t "~&part1: ~a~%" (part1 "input0.txt")))
+;; (time (format t "~&part1: ~a~%" (part1 "input1.txt")))
 
 
 
