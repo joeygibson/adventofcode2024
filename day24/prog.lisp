@@ -26,7 +26,7 @@
 
 (defmethod print-object ((self wire) stream)
   (print-unreadable-object (self stream)
-    (format t "~s: name: ~a, value: ~a" (type-of self) (name self) (value self))))
+    (format stream "~s: name: ~a, value: ~a" (type-of self) (name self) (value self))))
 
 (defun make-wire (name value)
   (make-instance 'wire :name name :value value))
@@ -40,7 +40,6 @@
 (defmethod print-object ((self gate) stream)
   (print-unreadable-object (self stream)
     (format t "~s: tripped: ~a" (type-of self) (tripped self))))
-
 
 (defclass and-gate (gate) ())
 (defclass or-gate (gate) ())
@@ -100,23 +99,29 @@
 (defun parse (file-name)
   (let* ((sections (split-file-into-sections file-name))
          (wires (make-hash-table :test #'equal))
-         (gates (make-hash-table :test #'equal)))
+         (gates nil))
+    
     (loop for line in (first sections)
           do (let* ((chunks (cl-ppcre:split ": " line))
                     (wire (make-wire (first chunks) (parse-integer (second chunks)))))
                (setf (gethash (name wire) wires) wire)))
+    
     (loop for line in (second sections)
           do (let* ((chunks (cl-ppcre:split " " line))
-                    (input1 (gethash (first chunks) wires
-                                     (make-wire (first chunks) nil)))
-                    (input2 (gethash (third chunks) wires
-                                     (make-wire (third chunks) nil)))
-                    (gate-type (second chunks))
+                    (input1 (gethash (nth 0 chunks) wires
+                                     (make-wire (nth 0 chunks) nil)))
+                    (input2 (gethash (nth 2 chunks) wires
+                                     (make-wire (nth 2 chunks) nil)))
+                    (gate-type (nth 1 chunks))
                     (output (gethash (nth 4 chunks) wires
                                      (make-wire (nth 4 chunks) nil)))
                     (gate (make-gate gate-type input1 input2 output)))
-               (setf (gethash gate gates) gate)
-               (when (not (gethash (name output) wires))
+               (push gate gates)
+               (unless (gethash (name input1) wires)
+                 (setf (gethash (name input1) wires) input1))
+               (unless (gethash (name input2) wires)
+                 (setf (gethash (name input2) wires) input2))
+               (unless (gethash (name output) wires)
                  (setf (gethash (name output) wires) output))))
     (values wires gates)))
 
@@ -134,23 +139,26 @@
 
 (defun part1 (file-name)
   (multiple-value-bind (wires gates) (parse file-name)
+    (format t "~&WIRES: ~a~%" (alexandria:hash-table-values wires))
+    (format t "~&GATES: ~a~%" gates)
     (let* ((untripped-gates (remove-if (lambda (gate)
                                          (tripped gate))
-                                       (alexandria:hash-table-values gates))))
+                                       gates)))
       (loop while untripped-gates
-            do (progn (loop for gate in (alexandria:hash-table-values gates)
+            do (progn
+                 (format t "~&untripped: ~a~%" untripped-gates)
+                 (loop for gate in untripped-gates
                             do (progn
-                                 ;(format t "~&gate: ~a~%" gate)
+                                 (format t "~&gate: ~a~%" gate)
                                  (trip gate)))
                       (setf untripped-gates (remove-if (lambda (gate)
                                                          (tripped gate))
                                                        untripped-gates))))
       (print "getting output values")
-      ;; (loop for gate in (alexandria:hash-table-values gates)
-      ;;       do (print gate))
       (get-output-values wires))))
 
-(time (format t "~&part1: ~a~%" (part1 "input2.txt")))
+(time (format t "~&part1: ~a~%" (part1 "input1.txt")))
+
 
 
 
