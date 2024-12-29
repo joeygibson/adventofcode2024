@@ -3,6 +3,7 @@
 (ql:quickload :lisp-utils)
 (ql:quickload :alexandria)
 
+(use-package :alexandria)
 (use-package :lisp-utils)
 
 (defun parse (file-name)
@@ -65,37 +66,39 @@
                      (setf current-chunk-start i)))))
     (reverse chunks)))
 
-(defun chunk-len (start end)
-  (1+ (- end start)))
+(defun chunk-len (chunk)
+  (1+ (- (cddr chunk)
+         (cadr chunk))))
+
+(defun max-file-id (map)
+  (let* ((ids (remove-if (lambda (id)
+                           (equal id "."))
+                         map))
+         (numeric-ids (mapcar #'parse-integer ids)))
+    (apply #'max numeric-ids)))
 
 (defun compact-2 (map)
-  (let* ((chunks (find-chunks map)))
-    (multiple-value-bind (file-chunks empty-chunks)
-        (partition chunks (lambda (chunk)
-                            (not (equal (caar chunk) "."))))
-     (loop for file-chunk in (reverse file-chunks)
-           do (let* ((chunk-start (cadr file-chunk))
-                     (chunk-end (cddr file-chunk))
-                     (chunk-length (chunk-len chunk-start chunk-end))
-                     (available-empty-chunk (loop for empty-chunk in empty-chunks
-                                                  if (>= (chunk-len (cadr empty-chunk)
-                                                                    (cddr empty-chunk))
-                                                         chunk-length)
-                                                    return empty-chunk)))
-                (when available-empty-chunk
-                  (let* ((empty-start (cadr available-empty-chunk))
-                         (empty-end (cddr available-empty-chunk))
-                         (empty-length (chunk-len empty-start empty-end)))
-                    (rotatef (subseq map chunk-start (1+ chunk-end))
-                             (subseq map empty-start (+ empty-start chunk-length)))
-                    (if (= chunk-length empty-length)
-                        (setf empty-chunks (remove available-empty-chunk empty-chunks :count 1))
-                        (let* ((empty-pos (position available-empty-chunk empty-chunks))
-                               (new-start (+ empty-start chunk-length))
-                               (new-empty-chunk (cons (cadr available-empty-chunk)
-                                                      (cons new-start (cddr available-empty-chunk)))))
-                          (setf (nth empty-pos empty-chunks) new-empty-chunk))))))))
+  (let* ((file-chunks (partition (find-chunks map)
+                                 (lambda (chunk)
+                                   (not (equal (caar chunk) "."))))))
+    (loop for chunk in (reverse file-chunks)
+          do (progn
+               (print (caar chunk))
+               (let* ((chunks (find-chunks map)))
+                (multiple-value-bind (_ empty-chunks)
+                    (partition chunks (lambda (chunk)
+                                        (not (equal (caar chunk) "."))))
+                  (when-let ((empty (first (remove-if (lambda (chnk)
+                                                        (< (chunk-len chnk)
+                                                           (chunk-len chunk)))
+                                                      empty-chunks))))
+                    (when (< (cddr empty)
+                             (cadr chunk))
+                      (rotatef (subseq map (cadr empty) (1+ (cddr empty)))
+                               (subseq map (cadr chunk) (1+ (cddr chunk))))))))))
     map))
+
+;(print (part2 "input0.txt"))
 
 (defun part1 (file-name)
   (let* ((disk-map (parse file-name))
@@ -108,6 +111,7 @@
 (defun part2 (file-name)
   (let* ((disk-map (parse file-name))
          (compact-map (compact-2 (create-compact-map disk-map))))
+    (print "part2")
     (loop for chunk in compact-map
           for i from 0
           if (not (equal chunk "."))
@@ -116,8 +120,11 @@
 ;;(print (part1 "input0.txt"))
 ;;(print (part1 "input1.txt"))
 
-(print (part2 "input0.txt"))
+;(print (part2 "input0.txt"))
 (print (part2 "input1.txt"))
+
+
+
 
 ;; too high: 8551696246309
 
