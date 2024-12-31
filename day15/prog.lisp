@@ -43,7 +43,8 @@
 
 (defun swap-items (from to grid)
   (rotatef (gethash from grid)
-           (gethash to grid)))
+           (gethash to grid))
+  to)
 
 (defun print-grid (grid max-x max-y)
   "Prints the grid stored in the hash table."
@@ -70,14 +71,11 @@
          (next (gethash next-pos grid)))
     (if next
         (cond ((equal next ".")
-               (swap-items pos next-pos grid)
-               next-pos)
+               (swap-items pos next-pos grid))
               ((equal next "O")
                (let ((ret-pos (move-forward next-pos dir grid)))
                  (if (not (equal ret-pos next-pos))
-                     (progn
-                       (swap-items pos next-pos grid)
-                       next-pos)
+                     (swap-items pos next-pos grid)
                      pos)))
               ((equal next "#")
                pos)
@@ -86,9 +84,7 @@
                           (equal dir "<"))
                       (let ((ret-pos (move-forward next-pos dir grid)))
                         (if (not (equal ret-pos next-pos))
-                            (progn
-                              (swap-items pos next-pos grid)
-                              next-pos)
+                            (swap-items pos next-pos grid)
                             pos)))
                      (t
                       (let* ((ret-pos (move-forward next-pos dir grid))
@@ -103,19 +99,16 @@
                         (if (and (not (equal ret-pos next-pos))
                                  (not (equal ret-pos2 next-pos2)))
                             (progn
-                              (swap-items pos next-pos grid)
                               (when ret-pos2
                                 (swap-items pos2 next-pos2 grid))
-                              next-pos)
+                              (swap-items pos next-pos grid))                            
                             pos)))))
               ((equal next "]")
                (cond ((or (equal dir ">")
                           (equal dir "<"))
                       (let ((ret-pos (move-forward next-pos dir grid)))
                         (if (not (equal ret-pos next-pos))
-                            (progn
-                              (swap-items pos next-pos grid)
-                              next-pos)
+                            (swap-items pos next-pos grid)
                             pos)))
                      (t
                       (let* ((ret-pos (move-forward next-pos dir grid))
@@ -129,11 +122,10 @@
                                            nil)))
                         (if (and (not (equal ret-pos next-pos))
                                  (not (equal ret-pos2 next-pos2)))
-                            (progn
-                              (swap-items pos next-pos grid)
+                            (progn                              
                               (when ret-pos2
                                 (swap-items pos2 next-pos2 grid))
-                              next-pos)
+                              (swap-items pos next-pos grid))
                             pos)))))))))
 
 (defun compute-gps (grid shape)
