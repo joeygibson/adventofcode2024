@@ -97,11 +97,11 @@
                                            (move-forward next-pos2 dir grid)
                                            nil)))
                         (if (and (not (equal ret-pos next-pos))
-                                 (not (equal ret-pos2 next-pos2)))
+                                 (or (null next-pos2)
+                                     (not (equal ret-pos2 next-pos2))))
                             (progn
-                              (when ret-pos2
-                                (swap-items pos2 next-pos2 grid))
-                              (swap-items pos next-pos grid))                            
+                              (swap-items pos2 next-pos2 grid)
+                              (swap-items pos next-pos grid))
                             pos)))))
               ((equal next "]")
                (cond ((or (equal dir ">")
@@ -121,10 +121,10 @@
                                            (move-forward next-pos2 dir grid)
                                            nil)))
                         (if (and (not (equal ret-pos next-pos))
-                                 (not (equal ret-pos2 next-pos2)))
-                            (progn                              
-                              (when ret-pos2
-                                (swap-items pos2 next-pos2 grid))
+                                 (or (null next-pos2)
+                                     (not (equal ret-pos2 next-pos2))))
+                            (progn
+                              (swap-items pos2 next-pos2 grid)
                               (swap-items pos next-pos grid))
                             pos)))))))))
 
