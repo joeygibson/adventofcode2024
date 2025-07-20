@@ -6,11 +6,9 @@ Class {
 }
 
 { #category : 'executing' }
-AoCDay02 >> allAscendingOrDescending: line [
+AoCDay02 >> allAscendingOrDescending: numbers [
 
-	| ascending descending numbers |
-	numbers := line substrings collect: [ :str | str asInteger ].
-
+	| ascending descending  |
 	ascending := numbers overlappingPairsCollect: [ :first :second |
 		             first < second ].
 
@@ -21,12 +19,17 @@ AoCDay02 >> allAscendingOrDescending: line [
 		  (descending allSatisfy: [ :item | item ])
 ]
 
+{ #category : 'as yet unclassified' }
+AoCDay02 >> checkReport: numbers [
+
+	^ (self allAscendingOrDescending: numbers) and:
+		  (self graduallyChanging: numbers)
+]
+
 { #category : 'executing' }
-AoCDay02 >> graduallyChanging: line [
+AoCDay02 >> graduallyChanging: numbers [
 
-	| numbers graduallyIncreasing |
-	numbers := line substrings collect: [ :str | str asInteger ].
-
+	| graduallyIncreasing |
 	graduallyIncreasing := numbers overlappingPairsCollect: [
 			                       :first
 			                       :second |
@@ -38,14 +41,55 @@ AoCDay02 >> graduallyChanging: line [
 	^ graduallyIncreasing allSatisfy: [ :diff | diff ]
 ]
 
+{ #category : 'testing' }
+AoCDay02 >> isSafeWithDampening: numbers removingItem: itemNumber [
+
+	| amendedReport |
+	itemNumber > numbers size ifTrue: [ ^ false ].
+
+	amendedReport := numbers copyWithoutIndex: itemNumber.
+
+	^ (self checkReport: amendedReport)
+		  ifTrue: [ ^ true ]
+		  ifFalse: [
+		  self isSafeWithDampening: numbers removingItem: itemNumber + 1 ]
+]
+
 { #category : 'executing' }
 AoCDay02 >> part1: lines [
 	|safe|
 	
 	safe := lines select: [ :line |
-		(self allAscendingOrDescending: line ) and:
-			(self graduallyChanging: line )].
+		|numbers|
+		numbers := line substrings collect: [ :str | str asInteger ].
+		self checkReport: numbers].
 		
 	^ safe size.
 	
+]
+
+{ #category : 'executing' }
+AoCDay02 >> part2: lines [
+
+	| safe unsafe dampenedGood |
+	safe := lines select: [ :line |
+			        | numbers |
+			        numbers := line substrings collect: [ :str | str asInteger ].
+			        (self allAscendingOrDescending: numbers) and:
+				        (self graduallyChanging: numbers) ].
+
+	unsafe := lines reject: [ :line |
+			          | numbers |
+			          numbers := line substrings collect: [ :str |
+				                     str asInteger ].
+			          (self allAscendingOrDescending: numbers) and:
+				          (self graduallyChanging: numbers) ].
+
+	dampenedGood := unsafe select: [ :line |
+			                | numbers |
+			                numbers := line substrings collect: [ :str |
+				                           str asInteger ].
+			                self isSafeWithDampening: numbers removingItem: 1 ].
+
+	^ safe size + dampenedGood size
 ]

@@ -19,7 +19,7 @@ AoCDay01Test >> testPart1WithRealData [
 { #category : 'tests' }
 AoCDay01Test >> testPart1WithSample [
 	|lines res|
-	
+	Transcript show: Day; cr.
 	lines := self readInputFileAsLines: 'input0.txt'.
 	
 	res := inst part1: lines.

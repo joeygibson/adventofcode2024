@@ -9,13 +9,13 @@ Class {
 AoCDay02Test >> testAllAscendingOrDescending [
 
 	| line |
-	line := '1 2 3 4 5'.
+	line := #( 1 2 3 4 5 ).
 	self assert: (inst allAscendingOrDescending: line).
 
-	line := '5 4 3 2 1'.
+	line := #( 5 4 3 2 1 ).
 	self assert: (inst allAscendingOrDescending: line).
 
-	line := '1 3 2 5 4'.
+	line := #( 1 3 2 5 4 ).
 	self deny: (inst allAscendingOrDescending: line)
 ]
 
@@ -23,14 +23,14 @@ AoCDay02Test >> testAllAscendingOrDescending [
 AoCDay02Test >> testGraduallyChanging [
 
 	| line |
-	line := '1 2 3 4 5'.
+	line := #( 1 2 3 4 5 ).
 	self assert: (inst graduallyChanging: line).
 
-	"line := '5 4 3 2 1'.
+	line := #( 5 4 3 2 1 ).
 	self assert: (inst allAscendingOrDescending: line).
 
-	line := '1 3 2 5 4'.
-	self deny: (inst allAscendingOrDescending: line)"
+	line := #( 1 3 2 5 4 ).
+	self deny: (inst allAscendingOrDescending: line)
 ]
 
 { #category : 'tests' }
@@ -53,4 +53,26 @@ AoCDay02Test >> testPart1WithSample [
 	res := inst part1: lines.
 	
 	self assert: res equals: 2.
+]
+
+{ #category : 'tests' }
+AoCDay02Test >> testPart2WithRealData [
+	|lines res|
+	
+	lines := self readInputFileAsLines: 'input1.txt'.
+	
+	res := inst part2: lines.
+	
+	self assert: res equals: 589.
+]
+
+{ #category : 'tests' }
+AoCDay02Test >> testPart2WithSample [
+	|lines res|
+	
+	lines := self readInputFileAsLines: 'input0.txt'.
+	
+	res := inst part2: lines.
+	
+	self assert: res equals: 4.
 ]
