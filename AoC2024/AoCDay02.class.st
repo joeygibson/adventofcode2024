@@ -19,7 +19,7 @@ AoCDay02 >> allAscendingOrDescending: numbers [
 		  (descending allSatisfy: [ :item | item ])
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay02 >> checkReport: numbers [
 
 	^ (self allAscendingOrDescending: numbers) and:
