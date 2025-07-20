@@ -5,6 +5,15 @@ Class {
 	#package : 'AoC2024-Tests'
 }
 
+{ #category : 'running' }
+AoCDay02Test >> setUp [
+	super setUp.
+	self day: '02'.
+	self path: FileLocator home / 'Projects' / 'adventofcode2024' asString.
+	
+	inst := AoCDay02 new.
+]
+
 { #category : 'tests' }
 AoCDay02Test >> testAllAscendingOrDescending [
 
@@ -35,44 +44,56 @@ AoCDay02Test >> testGraduallyChanging [
 
 { #category : 'tests' }
 AoCDay02Test >> testPart1WithRealData [
-	|lines res|
-	
-	lines := self readInputFileAsLines: 'input1.txt'.
-	
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
 	res := inst part1: lines.
-	
-	self assert: res equals: 549.
+
+	self assert: res equals: 549
 ]
 
 { #category : 'tests' }
 AoCDay02Test >> testPart1WithSample [
-	|lines res|
-	
-	lines := self readInputFileAsLines: 'input0.txt'.
-	
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
 	res := inst part1: lines.
-	
-	self assert: res equals: 2.
+
+	self assert: res equals: 2
 ]
 
 { #category : 'tests' }
 AoCDay02Test >> testPart2WithRealData [
-	|lines res|
-	
-	lines := self readInputFileAsLines: 'input1.txt'.
-	
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
 	res := inst part2: lines.
-	
-	self assert: res equals: 589.
+
+	self assert: res equals: 589
 ]
 
 { #category : 'tests' }
 AoCDay02Test >> testPart2WithSample [
-	|lines res|
-	
-	lines := self readInputFileAsLines: 'input0.txt'.
-	
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
 	res := inst part2: lines.
-	
-	self assert: res equals: 4.
+
+	self assert: res equals: 4
 ]

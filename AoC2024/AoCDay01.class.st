@@ -8,11 +8,6 @@ Class {
 	#package : 'AoC2024'
 }
 
-{ #category : 'initialization' }
-AoCDay01 >> initialize [
-	self class day: '01'.
-]
-
 { #category : 'executing' }
 AoCDay01 >> part1: lines [
 
