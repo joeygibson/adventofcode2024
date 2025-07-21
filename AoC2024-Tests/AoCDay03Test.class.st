@@ -41,3 +41,33 @@ AoCDay03Test >> testPart1WithSample [
 
 	self assert: res equals: 161.
 ]
+
+{ #category : 'tests' }
+AoCDay03Test >> testPart2WithRealData [
+
+	| lines res combined |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+		
+	combined := lines joinUsing: ''.
+
+	res := inst part2: (OrderedCollection with: combined).
+
+	self assert: res equals: 95846796.
+]
+
+{ #category : 'tests' }
+AoCDay03Test >> testPart2WithSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input2.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 48.
+]
