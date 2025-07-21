@@ -8,8 +8,9 @@ Class {
 { #category : 'executing' }
 AoCDay03 >> part1: lines [
 
-	| results |
-	results := lines collect: [ :line | self processLine: line ].
+	| results linesWithData |
+	linesWithData := lines reject: [ :line | line trim isEmpty ].
+	results := linesWithData collect: [ :line | self processLine: line ].
 
 	^ results sum
 ]
