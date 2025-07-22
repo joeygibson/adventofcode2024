@@ -13,7 +13,7 @@ AoCDay04 >> findAllStarts: puzzle [
 	
 	puzzle rowAndColumnValuesDo: [ :row :col :value |
 		value = $X ifTrue: [ 
-			starts add: row@col ] ].
+			starts add: col@row ] ].
 	
 	^ starts.
 ]
@@ -33,7 +33,7 @@ AoCDay04 >> getNeighbors: spot [
 	downLeft := OrderedCollection new.
 	downRight := OrderedCollection new.
 
-	1 to: 4 do: [ :i |
+	0 to: 3 do: [ :i |
 			right add: x + i @ y.
 			left add: x - i @ y.
 			up add: x @ (y - i).
@@ -73,18 +73,19 @@ AoCDay04 >> part1: puzzle [
 { #category : 'as yet unclassified' }
 AoCDay04 >> spellsXmas: puzzle neighbors: coords [
 
-	| matches validCoords |
+	| matches allValid |
 	matches := 0.
-	validCoords := coords select: [ :coord |
-			               coord > (0 @ 0) and:
-				               (coord x <= puzzle width and:
-					                coord y <= puzzle height) ].
 
-	'XMAS' do: [ :letter |
-			validCoords do: [ :coord |
-					| value |
-					value := puzzle at: coord.
-					value = letter ifTrue: (matches := matches + 1) ] ].
+	allValid := coords allSatisfy: [ :coord |
+			            coord > (0 @ 0) and:
+				            (coord x <= puzzle width and: coord y <= puzzle height) ].
+
+	allValid ifFalse: [ ^ false ].
+
+	'XMAS' with: coords do: [ :letter :coord |
+			| value |
+			value := puzzle atColumn: coord x atRow: coord y.
+			value = letter ifTrue: [ matches := matches + 1 ] ].
 
 	^ matches = 4
 ]

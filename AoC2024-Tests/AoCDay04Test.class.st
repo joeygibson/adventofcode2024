@@ -6,11 +6,11 @@ Class {
 }
 
 { #category : 'initialization' }
-AoCDay04Test >> createPuzzle [
+AoCDay04Test >> createPuzzle: fileName [
 
 	| lines puzzle |
 	lines := self
-		         readInputFileAsLines: 'input0.txt'
+		         readInputFileAsLines: fileName
 		         for: self day
 		         onPath: self path.
 
@@ -38,7 +38,7 @@ AoCDay04Test >> setUp [
 AoCDay04Test >> testCreatePuzzle [
 
 	| puzzle |
-	puzzle := self createPuzzle.
+	puzzle := self createPuzzle: 'input0.txt'.
 
 	self assert: puzzle height equals: 10.
 	self assert: puzzle width equals: 10.
@@ -50,11 +50,11 @@ AoCDay04Test >> testCreatePuzzle [
 AoCDay04Test >> testFindAllStarts [
 
 	| puzzle starts |
-	puzzle := self createPuzzle.
+	puzzle := self createPuzzle: 'input0.txt'.
 
 	starts := inst findAllStarts: puzzle.
 
-	self assert: (starts size) equals: 19
+	self assert: starts size equals: 19
 ]
 
 { #category : 'tests' }
@@ -63,32 +63,25 @@ AoCDay04Test >> testGetNeighbors [
 	| neighbors |
 	neighbors := inst getNeighbors: 2 @ 2.
 
-	Transcript
-		show: neighbors;
-		cr.
-
 	self assert: neighbors isNotEmpty
 ]
 
 { #category : 'tests' }
 AoCDay04Test >> testPart1WithRealData [
 
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input1.txt'
-		         for: self day
-		         onPath: self path.
+	| puzzle res |
+	puzzle := self createPuzzle: 'input1.txt'.
 
-	res := inst part1: lines.
+	res := inst part1: puzzle.
 
-	self assert: res equals: 161.
+	self assert: res equals: 2547.
 ]
 
 { #category : 'tests' }
 AoCDay04Test >> testPart1WithSample [
 
 	| res puzzle |
-	puzzle := self createPuzzle.
+	puzzle := self createPuzzle: 'input0.txt'.
 
 	res := inst part1: puzzle.
 
