@@ -39,7 +39,7 @@ AoCDay03Test >> testPart1WithSample [
 
 	res := inst part1: lines.
 
-	self assert: res equals: 161.
+	self assert: res equals: 161
 ]
 
 { #category : 'tests' }
