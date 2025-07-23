@@ -47,14 +47,18 @@ AoCDay04Test >> testCreatePuzzle [
 ]
 
 { #category : 'tests' }
-AoCDay04Test >> testFindAllStarts [
+AoCDay04Test >> testFindAllInstancesOfLetter [
 
 	| puzzle starts |
 	puzzle := self createPuzzle: 'input0.txt'.
 
-	starts := inst findAllStarts: puzzle.
+	starts := inst findAllInstances: puzzle of: $X.
 
-	self assert: starts size equals: 19
+	self assert: starts size equals: 19.
+
+	starts := inst findAllInstances: puzzle of: $A.
+
+	self assert: starts size equals: 24.
 ]
 
 { #category : 'tests' }
@@ -91,27 +95,21 @@ AoCDay04Test >> testPart1WithSample [
 { #category : 'tests' }
 AoCDay04Test >> testPart2WithRealData [
 
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input1.txt'
-		         for: self day
-		         onPath: self path.
+	| res puzzle |
+	puzzle := self createPuzzle: 'input1.txt'.
 
-	res := inst part2: lines.
+	res := inst part2: puzzle.
 
-	self assert: res equals: 161.
+	self assert: res equals: 1939
 ]
 
 { #category : 'tests' }
 AoCDay04Test >> testPart2WithSample [
 
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input0.txt'
-		         for: self day
-		         onPath: self path.
+	| res puzzle |
+	puzzle := self createPuzzle: 'input0.txt'.
 
-	res := inst part2: lines.
+	res := inst part2: puzzle.
 
-	self assert: res equals: 161.
+	self assert: res equals: 9
 ]

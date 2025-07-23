@@ -6,19 +6,38 @@ Class {
 }
 
 { #category : 'enumerating' }
-AoCDay04 >> findAllStarts: puzzle [
+AoCDay04 >> findAllInstances: puzzle of: letter [
 	| starts |
 	
 	starts := OrderedCollection new.
 	
 	puzzle rowAndColumnValuesDo: [ :row :col :value |
-		value = $X ifTrue: [ 
+		value = letter ifTrue: [ 
 			starts add: col@row ] ].
 	
 	^ starts.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
+AoCDay04 >> getCorners: spot [
+
+	| x y topLeft topRight bottomLeft bottomRight |
+	x := spot x.
+	y := spot y.
+
+	topLeft := x - 1 @ (y - 1).
+	topRight := x + 1 @ (y - 1).
+	bottomLeft := x - 1 @ (y + 1).
+	bottomRight := x + 1 @ (y + 1).
+
+	^ {
+		  topLeft.
+		  topRight.
+		  bottomLeft.
+		  bottomRight }
+]
+
+{ #category : 'executing' }
 AoCDay04 >> getNeighbors: spot [
 
 	| x y right left up down upLeft upRight downLeft downRight |
@@ -58,7 +77,7 @@ AoCDay04 >> getNeighbors: spot [
 AoCDay04 >> part1: puzzle [
 	| starts res |
 	
-	starts := self findAllStarts: puzzle.
+	starts := self findAllInstances: puzzle of: $X.
 	
 	res := starts flatCollect: [ :start |
 		|neighbors|
@@ -70,7 +89,18 @@ AoCDay04 >> part1: puzzle [
 	^ res size.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
+AoCDay04 >> part2: puzzle [
+
+	| starts res |
+	starts := self findAllInstances: puzzle of: $A.
+
+	res := starts select: [ :spot | self xMas: puzzle atSpot: spot ].
+
+	^ res size
+]
+
+{ #category : 'executing' }
 AoCDay04 >> spellsXmas: puzzle neighbors: coords [
 
 	| matches allValid |
@@ -88,4 +118,36 @@ AoCDay04 >> spellsXmas: puzzle neighbors: coords [
 			value = letter ifTrue: [ matches := matches + 1 ] ].
 
 	^ matches = 4
+]
+
+{ #category : 'executing' }
+AoCDay04 >> xMas: puzzle atSpot: spot [
+
+	| matches allValid topLeft topRight bottomLeft bottomRight combos corners found |
+	matches := 0.
+
+	corners := self getCorners: spot.
+
+	allValid := corners allSatisfy: [ :coord |
+			            coord > (0 @ 0) and:
+				            (coord x <= puzzle width and: coord y <= puzzle height) ].
+
+	allValid ifFalse: [ ^ false ].
+	combos := #( 'MSMS' 'SMSM' 'MSSM' 'SMMS' ).
+
+	topLeft := puzzle atColumn: corners first x atRow: corners first y.
+	topRight := puzzle atColumn: corners second x atRow: corners second y.
+	bottomLeft := puzzle atColumn: corners third x atRow: corners third y.
+	bottomRight := puzzle
+		               atColumn: corners fourth x
+		               atRow: corners fourth y.
+
+	found := combos
+		         detect: [ :combo |
+				         topLeft = combo first and:
+					         (bottomRight = combo second and:
+						          (topRight = combo third and: bottomLeft = combo fourth)) ]
+		         ifNone: nil.
+
+	^ found isNotNil
 ]
