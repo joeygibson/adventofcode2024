@@ -82,6 +82,38 @@ AoCDay05 >> part1: lines [
 	^ middlePages sum
 ]
 
+{ #category : 'executing' }
+AoCDay05 >> part2: lines [
+
+	| data rules updates ruleMap validUpdates invalidUpdates answer |
+	data := self parse: lines.
+	rules := data first.
+	updates := data second.
+	answer := 0.
+
+	ruleMap := self makeRuleTable: rules.
+	validUpdates := self validateUpdates: updates withRules: ruleMap.
+	invalidUpdates := updates difference: validUpdates.
+
+	invalidUpdates do: [ :update |
+			| counts partialAnswer |
+			counts := Dictionary new.
+
+			ruleMap keysAndValuesDo: [ :page :previousPages |
+					previousPages do: [ :previousPage |
+							((update includes: page) and: (update includes: previousPage))
+								ifTrue: [
+								counts at: page update: [ :value | value + 1 ] initial: 1 ] ] ].
+
+			partialAnswer := update detect: [ :page |
+				                 (counts at: page ifAbsent: 0)
+				                 = (update size // 2) ].
+
+			answer := answer + partialAnswer ].
+
+	^ answer
+]
+
 { #category : 'as yet unclassified' }
 AoCDay05 >> validateUpdates: updates withRules: ruleMap [
 
