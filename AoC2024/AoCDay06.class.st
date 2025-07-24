@@ -58,6 +58,32 @@ AoCDay06 >> part1: lines [
 ]
 
 { #category : 'as yet unclassified' }
+AoCDay06 >> part2: lines [
+
+	| map guard parts guardCol guardRow loopCount |
+	parts := self createMapAndGuard: lines.
+	map := parts first.
+	guard := parts second.
+	guardCol := guard col.
+	guardRow := guard row.
+	loopCount := 1.
+
+	1 to: map height do: [ :row |
+			1 to: map width do: [ :col |
+					| mapCopy guardCopy results |
+					mapCopy := map deepCopy.
+					guardCopy := guard deepCopy.
+
+					(((map atColumn: col atRow: row) isKindOf: FloorTile) and:
+						 (col ~= guardCol and: row ~= guardRow)) ifTrue: [
+							mapCopy atColumn: col atRow: row put: (self createThing: $O).
+							results := self play: mapCopy withGuard: guardCopy.
+							results = #InALoop ifTrue: [ loopCount := loopCount + 1 ] ] ] ].
+
+	^ loopCount
+]
+
+{ #category : 'as yet unclassified' }
 AoCDay06 >> play: map withGuard: guard [
 
 	| guardDirection oldX oldY x y nextSpot newDirection |
