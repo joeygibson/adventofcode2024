@@ -1,3 +1,6 @@
+"
+Day03 of Advent of Code 2024.
+"
 Class {
 	#name : 'AoCDay03',
 	#superclass : 'AoCBase',
