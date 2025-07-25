@@ -1,3 +1,6 @@
+"
+A single tile on the floor of the warehouse.
+"
 Class {
 	#name : 'FloorTile',
 	#superclass : 'Object',

@@ -12,16 +12,16 @@ Class {
 AoCDay06 >> createMapAndGuard: lines [
 
 	| map guard |
-	map := CTArray2D width: lines first size height: lines size.
+	map := CTNewArray2D width: lines first size height: lines size.
 
 	lines doWithIndex: [ :line :row |
 			line asArray doWithIndex: [ :c :col |
 					| thing |
 					thing := self createThing: c.
-					(thing isKindOf: Guard) ifTrue: [
+					c = $^ ifTrue: [
 							thing col: col.
 							thing row: row.
-							guard := thing.
+							guard := thing deepCopy.
 							thing := self createThing: $. ].
 					map atColumn: col atRow: row put: thing ] ].
 
@@ -60,25 +60,27 @@ AoCDay06 >> part1: lines [
 { #category : 'as yet unclassified' }
 AoCDay06 >> part2: lines [
 
-	| map guard parts guardCol guardRow loopCount |
+	| map guard parts guardCol guardRow loopCount guardPos |
 	parts := self createMapAndGuard: lines.
-	map := parts first.
+	map := parts first deepCopy.
 	guard := parts second.
 	guardCol := guard col.
 	guardRow := guard row.
-	loopCount := 1.
+	guardPos := guardCol @ guardRow.
+	loopCount := 0.
 
-	1 to: map height do: [ :row |
-			1 to: map width do: [ :col |
-					| mapCopy guardCopy results |
-					mapCopy := map deepCopy.
-					guardCopy := guard deepCopy.
+	map withIndexesDo: [ :col :row :thing |
+			| mapCopy guardCopy results |
+			parts := self createMapAndGuard: lines.
+			mapCopy := parts first.
+			guardCopy := parts second.
 
-					(((map atColumn: col atRow: row) isKindOf: FloorTile) and:
-						 (col ~= guardCol and: row ~= guardRow)) ifTrue: [
-							mapCopy atColumn: col atRow: row put: (self createThing: $O).
-							results := self play: mapCopy withGuard: guardCopy.
-							results = #InALoop ifTrue: [ loopCount := loopCount + 1 ] ] ] ].
+
+			(col @ row ~= guardPos and: (thing isKindOf: FloorTile)) ifTrue: [
+					mapCopy atColumn: col atRow: row put: (self createThing: $O).
+
+					results := self play: mapCopy withGuard: guardCopy.
+					results = #InALoop ifTrue: [ loopCount := loopCount + 1 ] ] ].
 
 	^ loopCount
 ]

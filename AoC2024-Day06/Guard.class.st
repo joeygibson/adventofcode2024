@@ -1,3 +1,6 @@
+"
+The security guard at the warehouse.
+"
 Class {
 	#name : 'Guard',
 	#superclass : 'Object',
@@ -36,9 +39,11 @@ Guard >> direction: anObject [
 
 { #category : 'initialization' }
 Guard >> initialize [
+
+	super initialize.
 	direction := #up.
 	col := 0.
-	row := 0.
+	row := 0
 ]
 
 { #category : 'printing' }

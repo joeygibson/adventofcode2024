@@ -1,3 +1,6 @@
+"
+And obstacle placed in the guard's path for part 2.
+"
 Class {
 	#name : 'Obstacle',
 	#superclass : 'Object',

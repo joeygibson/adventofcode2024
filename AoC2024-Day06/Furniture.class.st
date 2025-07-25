@@ -1,3 +1,6 @@
+"
+Things in the path of the security guard, that you might find in a warehouse.
+"
 Class {
 	#name : 'Furniture',
 	#superclass : 'Object',
