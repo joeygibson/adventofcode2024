@@ -31,7 +31,13 @@ AoCDay07 >> parse: lines [
 { #category : 'executing' }
 AoCDay07 >> part1: lines [
 
-	^ self partX: lines withOperators: { $*. $+ }
+	^ self partX: lines withOperators: { '*'. '+' }
+]
+
+{ #category : 'executing' }
+AoCDay07 >> part2: lines [
+
+	^ self partX: lines withOperators: { '*'. '+'. '||' }
 ]
 
 { #category : 'as yet unclassified' }
@@ -68,8 +74,12 @@ AoCDay07 >> solve: ops [
 	op3 := ops third.
 	remainingOps := ops allButFirst: 3.
 
-	op2 = $* ifTrue: [ solution := op1 * op3 ].
-	op2 = $+ ifTrue: [ solution := op1 + op3 ].
+	op2 = '*' ifTrue: [ solution := op1 * op3 ].
+	op2 = '+' ifTrue: [ solution := op1 + op3 ].
+	op2 = '||' ifTrue: [
+			| tmp |
+			tmp := op1 asString , op3 asString.
+			solution := tmp asInteger ].
 
 	remainingOps isNotEmpty
 		ifTrue: [

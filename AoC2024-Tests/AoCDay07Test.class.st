@@ -41,3 +41,33 @@ AoCDay07Test >> testPart1WithSample [
 
 	self assert: res equals: 3749
 ]
+
+{ #category : 'tests' }
+AoCDay07Test >> testPart2WithRealData [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+	
+	self timeLimit: (Duration seconds: 600).
+	
+	res := inst part2: lines.
+
+	self assert: res equals: 328790210468594
+]
+
+{ #category : 'tests' }
+AoCDay07Test >> testPart2WithSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 11387
+]
