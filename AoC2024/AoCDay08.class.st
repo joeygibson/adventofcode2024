@@ -8,7 +8,7 @@ Class {
 	#package : 'AoC2024'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay08 >> euclideanDistanceIntegersFrom: thisAntennaLoc to: otherAntennaLoc [
 
 	| x1 x2 y1 y2 |
@@ -17,7 +17,7 @@ AoCDay08 >> euclideanDistanceIntegersFrom: thisAntennaLoc to: otherAntennaLoc [
 	x2 := otherAntennaLoc x.
 	y2 := otherAntennaLoc y.
 
-	^ ((x2 - x2) squared + (y2 - y1) squared) sqrt rounded
+	^ ((x2 - x1) squared + (y2 - y1) squared) sqrt rounded
 ]
 
 { #category : 'parsing' }
@@ -58,13 +58,13 @@ AoCDay08 >> part1: lines [
 	height := data fourth.
 	allAntinodes := OrderedCollection new.
 
-	antennas do: [ :ua |
+	antennas copy do: [ :ua |
 			| thisAntenna thisAntennaLoc otherAntennas |
 			thisAntenna := ua second.
 			thisAntennaLoc := ua first.
-			otherAntennas := antennas select: [ :other |
-				                 other second = thisAntenna and:
-					                 other first ~= thisAntennaLoc ].
+			otherAntennas := antennas select: [ :oa |
+				                 oa second = thisAntenna and:
+					                 oa first ~= thisAntennaLoc ].
 
 			otherAntennas do: [ :oa |
 					| otherAntennaLoc distance newPoints antinodes |
@@ -79,18 +79,12 @@ AoCDay08 >> part1: lines [
 
 					antinodes := newPoints select: [ :point |
 						             point isWithinWidth: width height: height ].
-
 					allAntinodes addAll: antinodes ] ].
-
-	allAntinodes do: [ :antinode |
-			Transcript
-				show: antinode;
-				cr ].
 
 	^ allAntinodes asSet size
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay08 >> plotNewPointsFrom: thisAntennaLoc to: otherAntennaLoc distance: distance [
 
 	| x1 x2 y1 y2 dx dy vecLength unitDx unitDy newPointA newPointB |
