@@ -20,6 +20,31 @@ AoCDay08 >> euclideanDistanceIntegersFrom: thisAntennaLoc to: otherAntennaLoc [
 	^ ((x2 - x1) squared + (y2 - y1) squared) sqrt rounded
 ]
 
+{ #category : 'executing' }
+AoCDay08 >> gridPointsOnLineFrom: pointA to: pointB limit: limit [
+
+	| x1 x2 y1 y2 dX dY g stepX stepY |
+	x1 := pointA x.
+	y1 := pointA y.
+	x2 := pointB x.
+	y2 := pointB y.
+
+	dX := x2 - x1.
+	dY := y2 - y1.
+	g := dX abs gcd: dY abs.
+
+	g = 0 ifTrue: [
+			^ {
+				  pointA.
+				  pointB } ].
+
+	stepX := dX // g.
+	stepY := dY // g.
+
+	^ (limit negated to: limit) collect: [ :k |
+		  x1 + (k * stepX) @ (y1 + (k * stepY)) ]
+]
+
 { #category : 'parsing' }
 AoCDay08 >> parse: lines [
 
@@ -76,6 +101,43 @@ AoCDay08 >> part1: lines [
 						             plotNewPointsFrom: thisAntennaLoc
 						             to: otherAntennaLoc
 						             distance: distance.
+
+					antinodes := newPoints select: [ :point |
+						             point isWithinWidth: width height: height ].
+					allAntinodes addAll: antinodes ] ].
+
+	^ allAntinodes asSet size
+]
+
+{ #category : 'executing' }
+AoCDay08 >> part2: lines [
+
+	| data map antennas width height allAntinodes |
+	data := self parse: lines.
+	map := data first.
+	antennas := data second.
+	width := data third.
+	height := data fourth.
+	allAntinodes := OrderedCollection new.
+
+	antennas copy do: [ :ua |
+			| thisAntenna thisAntennaLoc otherAntennas |
+			thisAntenna := ua second.
+			thisAntennaLoc := ua first.
+			otherAntennas := antennas select: [ :oa |
+				                 oa second = thisAntenna and:
+					                 oa first ~= thisAntennaLoc ].
+
+			otherAntennas do: [ :oa |
+					| otherAntennaLoc distance newPoints antinodes |
+					otherAntennaLoc := oa first.
+					distance := self
+						            euclideanDistanceIntegersFrom: thisAntennaLoc
+						            to: otherAntennaLoc.
+					newPoints := self
+						             gridPointsOnLineFrom: thisAntennaLoc
+						             to: otherAntennaLoc
+						             limit: (width max: height).
 
 					antinodes := newPoints select: [ :point |
 						             point isWithinWidth: width height: height ].
