@@ -8,7 +8,41 @@ Class {
 	#package : 'AoC2024'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
+AoCDay09 >> compact2: map [
+
+	| reversedMap workingMap mapSize fieldChunks |
+	workingMap := map deepCopy.
+	reversedMap := map reversed.
+	mapSize := map size.
+	fieldChunks := self
+		               extractChunks: map
+		               matching: [ :chr | chr ~= '.' ].
+
+	fieldChunks reverse do: [ :fieldChunk |
+			| len emptyChunk emptyChunks |
+			emptyChunks := self
+				               extractChunks: workingMap
+				               matching: [ :chr | chr = '.' ].
+
+			len := fieldChunk first size.
+
+			emptyChunk := emptyChunks
+				              detect: [ :chunk |
+				              chunk first size >= len and:
+					              chunk last < fieldChunk last ]
+				              ifNone: nil.
+
+			emptyChunk ifNotNil: [
+				workingMap
+					rotateFrom: fieldChunk last
+					length: len
+					to: emptyChunk last ] ].
+
+	^ workingMap
+]
+
+{ #category : 'executing' }
 AoCDay09 >> compact: map [
 
 	| reversedMap workingMap mapSize |
@@ -31,7 +65,7 @@ AoCDay09 >> compact: map [
 	^ workingMap
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay09 >> createCompactMap: diskMap [
 
 	| compactMap isFileIdentifier fileId |
@@ -49,6 +83,51 @@ AoCDay09 >> createCompactMap: diskMap [
 			isFileIdentifier := isFileIdentifier not ].
 
 	^ compactMap
+]
+
+{ #category : 'executing' }
+AoCDay09 >> extractChunks: map matching: aBlock [
+
+	| block lastChr chunks startIndex inChunk |
+	chunks := OrderedCollection new.
+	block := OrderedCollection new.
+	lastChr := nil.
+	startIndex := 1.
+	inChunk := false.
+
+	1 to: map size do: [ :i |
+			| chr |
+			chr := map at: i.
+
+			(aBlock value: chr)
+				ifTrue: [
+						inChunk ifFalse: [
+								startIndex := i.
+								inChunk := true ].
+
+						(chr ~= lastChr and: block isNotEmpty) ifTrue: [
+								chunks add: {
+										block.
+										startIndex }.
+								block := OrderedCollection new.
+								startIndex := i ].
+						block add: chr.
+						lastChr := chr ]
+				ifFalse: [
+						inChunk := false.
+						block isNotEmpty ifTrue: [
+								chunks add: {
+										block.
+										startIndex }.
+								block := OrderedCollection new ].
+						lastChr := chr ] ].
+
+	block ifNotEmpty: [
+			chunks add: {
+					block.
+					startIndex } ].
+
+	^ chunks
 ]
 
 { #category : 'testing' }
@@ -76,6 +155,23 @@ AoCDay09 >> part1: lines [
 	fileIds := compactedMap takeWhile: [ :item | item ~= '.' ].
 	checkSum := fileIds collectWithIndex: [ :item :index |
 		            item asInteger * (index - 1) ].
+
+	^ checkSum sum
+]
+
+{ #category : 'executing' }
+AoCDay09 >> part2: lines [
+
+	| diskMap compactMap compactedMap checkSum |
+	diskMap := lines first.
+	compactMap := self createCompactMap: diskMap.
+
+	compactedMap := self compact2: compactMap.
+
+	checkSum := compactedMap collectWithIndex: [ :item :index |
+			            item = '.'
+				            ifTrue: [ 0 ]
+				            ifFalse: [ item asInteger * (index - 1) ] ].
 
 	^ checkSum sum
 ]
