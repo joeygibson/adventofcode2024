@@ -37,7 +37,7 @@ AoCDay10 >> findPaths: map fromPos: pos toEnds: ends [
 	current := map atColumn: pos x atRow: pos y.
 
 	current = 9
-		ifTrue: [ ends at: pos update: [ :v | v + 1 ] initial: 0 ]
+		ifTrue: [ ends at: pos update: [ :v | v + 1 ] initial: 1 ]
 		ifFalse: [
 				(self getNeighbors: pos) do: [ :neighbor |
 						| nv |
@@ -100,5 +100,18 @@ AoCDay10 >> part1: lines [
 	results := self discoverTrails: map withStarts: starts.
 	
 	^ results first.
+	
+]
+
+{ #category : 'executing' }
+AoCDay10 >> part2: lines [
+	|map starts results|
+	
+	map := self parse: lines.
+	starts := self findStarts: map.
+	
+	results := self discoverTrails: map withStarts: starts.
+	
+	^ results second.
 	
 ]
