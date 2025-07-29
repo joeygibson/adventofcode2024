@@ -49,3 +49,15 @@ AoCDay11 >> part1: lines [
 
 	^ stones size
 ]
+
+{ #category : 'executing' }
+AoCDay11 >> part2: lines [
+
+	| stones |
+	stones := lines first substrings asArray collect: [ :stone |
+		          stone asString asInteger ].
+
+	stones := self blink: stones times: 75.
+
+	^ stones size
+]
