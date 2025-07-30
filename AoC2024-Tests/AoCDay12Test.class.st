@@ -15,6 +15,20 @@ AoCDay12Test >> setUp [
 ]
 
 { #category : 'tests' }
+AoCDay12Test >> testPart1WithOtherSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input2.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part1: lines.
+
+	self assert: res equals: 772
+]
+
+{ #category : 'tests' }
 AoCDay12Test >> testPart1WithRealData [
 
 	| lines res |
@@ -40,18 +54,4 @@ AoCDay12Test >> testPart1WithSample [
 	res := inst part1: lines.
 
 	self assert: res equals: 140
-]
-
-{ #category : 'tests' }
-AoCDay12Test >> testPart2WithOtherSample [
-
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input2.txt'
-		         for: self day
-		         onPath: self path.
-
-	res := inst part1: lines.
-
-	self assert: res equals: 772
 ]

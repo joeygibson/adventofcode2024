@@ -19,13 +19,13 @@ AoCDay08Test >> testPart1WithOtherSample [
 
 	| lines res |
 	lines := self
-		         readInputFileAsLines: 'input2.txt'
+		         readInputFileAsLines: 'input3.txt'
 		         for: self day
 		         onPath: self path.
 
-	res := inst part1: lines.
+	res := inst part2: lines.
 
-	self assert: res equals: 2
+	self assert: res equals: 9
 ]
 
 { #category : 'tests' }
@@ -54,20 +54,6 @@ AoCDay08Test >> testPart1WithSample [
 	res := inst part1: lines.
 
 	self assert: res equals: 14
-]
-
-{ #category : 'tests' }
-AoCDay08Test >> testPart2WithOtherSample [
-
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input3.txt'
-		         for: self day
-		         onPath: self path.
-
-	res := inst part2: lines.
-
-	self assert: res equals: 9
 ]
 
 { #category : 'tests' }
