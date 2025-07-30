@@ -9,6 +9,30 @@ Class {
 }
 
 { #category : 'executing' }
+AoCDay11 >> blink2: rock [
+
+	| rockAsNum rockLen res |
+	rockAsNum := rock asString asInteger.
+	rockLen := rock size.
+
+	rockAsNum = 0
+		ifTrue: [ res := { '1' } ]
+		ifFalse: [
+				rockLen even
+					ifTrue: [
+							| mid left right |
+							mid := rockLen // 2.
+							left := rock allButLast: mid.
+							right := (rock allButFirst: mid) asInteger asString.
+							res := {
+								       left.
+								       right } ]
+					ifFalse: [ res := { (rockAsNum * 2048) asString } ] ].
+
+	^ res
+]
+
+{ #category : 'executing' }
 AoCDay11 >> blink: stones times: times [
 
 	| work |
@@ -54,10 +78,19 @@ AoCDay11 >> part1: lines [
 AoCDay11 >> part2: lines [
 
 	| stones |
-	stones := lines first substrings asArray collect: [ :stone |
-		          stone asString asInteger ].
+	stones := Dictionary new.
 
-	stones := self blink: stones times: 75.
+	lines first substrings do: [ :stone |
+		stones at: stone update: [ :v | v + 1 ] initial: 1 ].
 
-	^ stones size
+	75 timesRepeat: [
+			| newStones |
+			newStones := Dictionary new.
+
+			stones keysAndValuesDo: [ :stone :count |
+					(self blink2: stone) do: [ :newStone |
+						newStones at: newStone update: [ :v | v + count ] initial: 1 ] ].
+			stones := newStones copy ].
+
+	^ stones values sum
 ]
