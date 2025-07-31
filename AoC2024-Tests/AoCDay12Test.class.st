@@ -55,3 +55,47 @@ AoCDay12Test >> testPart1WithSample [
 
 	self assert: res equals: 140
 ]
+
+{ #category : 'tests' }
+AoCDay12Test >> testPart2WithOtherSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input2.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 436
+]
+
+{ #category : 'tests' }
+AoCDay12Test >> testPart2WithRealData [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
+	self increaseTimeout: 600.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 887932
+]
+
+{ #category : 'tests' }
+AoCDay12Test >> testPart2WithSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 80
+]
