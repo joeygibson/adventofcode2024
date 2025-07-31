@@ -10,6 +10,13 @@ Class {
 }
 
 { #category : 'code-critics' }
+ManifestAoC2024 class >> ruleCollectionProtocolRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay14 #part2: #false)) #'2025-07-31T15:45:11.645107-04:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestAoC2024 class >> ruleLongMethodsRuleV1FalsePositive [
 
 	<ignoreForCoverage>

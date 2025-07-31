@@ -63,3 +63,38 @@ AoCDay14 >> part1: lines which: which [
 
 	^ quads inject: 1 into: [ :v :total | total * v ]
 ]
+
+{ #category : 'executing' }
+AoCDay14 >> part2: lines [
+
+	| positions velocities t |
+	positions := OrderedCollection new.
+	velocities := OrderedCollection new.
+
+	lines do: [ :line |
+			| numbers |
+			numbers := line
+				           regex: '-?\d+'
+				           matchesCollect: [ :each | each asInteger ].
+			positions add: numbers first @ numbers second.
+			velocities add: numbers third @ numbers fourth ].
+
+	t := 0.
+
+	[ true ] whileTrue: [
+			| distinctPositions |
+			distinctPositions := positions asSet.
+
+			distinctPositions size = positions size ifTrue: [ ^ t ].
+
+			1 to: positions size do: [ :i |
+					| pos velocity |
+					pos := positions at: i.
+					velocity := velocities at: i.
+
+					positions
+						at: i
+						put: pos x + velocity x \\ 101 @ (pos y + velocity y \\ 103) ].
+
+			t := t + 1 ]
+]
