@@ -10,6 +10,13 @@ Class {
 }
 
 { #category : 'code-critics' }
+ManifestAoC2024 class >> ruleBadMessageRule2V1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay15 #moveRobot:direction:onGrid: #false)) #'2025-08-01T10:42:21.168724-04:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestAoC2024 class >> ruleCollectionProtocolRuleV1FalsePositive [
 
 	<ignoreForCoverage>
