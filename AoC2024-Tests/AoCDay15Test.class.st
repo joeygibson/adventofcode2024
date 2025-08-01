@@ -33,7 +33,7 @@ AoCDay15Test >> testPart1WithRealData [
 
 	| lines res |
 	lines := self
-		         readInputFileAsLines: 'input0.txt'
+		         readInputFileAsLines: 'input1.txt'
 		         for: self day
 		         onPath: self path.
 
