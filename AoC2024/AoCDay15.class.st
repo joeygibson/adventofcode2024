@@ -21,6 +21,26 @@ AoCDay15 >> computeGps: grid forShape: shape [
 ]
 
 { #category : 'as yet unclassified' }
+AoCDay15 >> embiggenItems: lines [
+
+	^ lines collect: [ :line |
+			  line asArray flatCollect: [ :c |
+					  c
+						  caseOf: {
+								  ([ $# ] -> [ { $#. $# } ]).
+								  ([ $O ] -> [ { $[. $] } ]).
+								  ([ $. ] -> [ { $.. $. } ]).
+								  ([ $@ ] -> [ { $@. $. } ]) }
+						  otherwise: [ self error: 'Invalid item' ] ] ]
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay15 >> handleLeftBracket: robot nextPos: nextPos in: grid [
+
+	
+]
+
+{ #category : 'as yet unclassified' }
 AoCDay15 >> moveRobot: robot direction: dir onGrid: grid [
 
 	| nextPos next result |
@@ -56,7 +76,19 @@ AoCDay15 >> moveRobot: robot direction: dir onGrid: grid [
 								           ifTrue: [ robot ]
 								           ifFalse: [
 								           self swapItems: robot with: nextPos in: grid ] ]).
-						          ([ '#' ] -> [ robot ]) }
+						          ([ '#' ] -> [ robot ]).
+						          ([ '[' ]
+						           -> [
+						           self
+							           handleLeftBracket: robot
+							           nextPos: nextPos
+							           in: grid ]).
+						          ([ ']' ]
+						           -> [
+						           self
+							           handleRightBracket: robot
+							           nextPos: nextPos
+							           in: grid ]) }
 				          otherwise: [ robot ] ].
 
 	"Transcript
@@ -68,14 +100,18 @@ AoCDay15 >> moveRobot: robot direction: dir onGrid: grid [
 ]
 
 { #category : 'parsing' }
-AoCDay15 >> parse: lines [
+AoCDay15 >> parse: lines part: part [
 
-	| sections grid moves |
+	| sections grid moves gridLines |
 	sections := lines splitOn: [ :e | e isEmpty ].
+	gridLines := sections first.
 
-	grid := self parseToGridAsStrings: sections first.
+	part = #part2 ifTrue: [ gridLines := self embiggenItems: gridLines ].
 
-	moves := (sections second joinUsing: '') asArray collect: [ :c | c asString ].
+	grid := self parseToGridAsStrings: gridLines.
+
+	moves := (sections second joinUsing: '') asArray collect: [ :c |
+		         c asString ].
 
 	^ {
 		  grid.
@@ -86,7 +122,7 @@ AoCDay15 >> parse: lines [
 AoCDay15 >> part1: lines [
 
 	| output grid moves width height robot |
-	output := self parse: lines.
+	output := self parse: lines part: #part1.
 	grid := output first.
 	moves := output second.
 	width := grid width - 2.
@@ -107,6 +143,33 @@ AoCDay15 >> part1: lines [
 	"grid printGridOn: Transcript."
 
 	^ self computeGps: grid forShape: 'O'
+]
+
+{ #category : 'executing' }
+AoCDay15 >> part2: lines [
+
+	| output grid moves width height robot |
+	output := self parse: lines part: #part2.
+	grid := output first.
+	moves := output second.
+	width := grid width - 2.
+	height := grid height - 2.
+	
+	grid withIndexesDo: [ :row :col :item |
+		item = '@' ifTrue: [ robot := col @ row ] ].
+
+	grid printGridOn: Transcript.
+
+	moves do: [ :dir |
+		robot := self moveRobot: robot direction: dir onGrid: grid ].
+
+	Transcript
+		show: '-----';
+		cr.
+
+	"grid printGridOn: Transcript."
+
+	^ self computeGps: grid forShape: '['
 ]
 
 { #category : 'as yet unclassified' }

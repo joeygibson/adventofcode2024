@@ -55,3 +55,31 @@ AoCDay15Test >> testPart1WithSample [
 
 	self assert: res equals: 10092
 ]
+
+{ #category : 'tests' }
+AoCDay15Test >> testPart2WithOtherSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input2.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 9021
+]
+
+{ #category : 'tests' }
+AoCDay15Test >> testPart2WithSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 9021
+]

@@ -13,7 +13,7 @@ Class {
 ManifestAoC2024 class >> ruleBadMessageRule2V1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGMethodDefinition #(#AoCDay15 #moveRobot:direction:onGrid: #false)) #'2025-08-01T10:42:21.168724-04:00') )
+	^ #(#(#(#RGMethodDefinition #(#AoCDay15 #moveRobot:direction:onGrid: #false)) #'2025-08-01T10:42:21.168724-04:00') #(#(#RGMethodDefinition #(#AoCDay15 #embiggenItems: #false)) #'2025-08-01T13:43:59.876235-04:00') )
 ]
 
 { #category : 'code-critics' }
