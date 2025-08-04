@@ -8,7 +8,7 @@ Class {
 	#package : 'AoC2024'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay15 >> computeGps: grid forShape: shape [
 
 	| res |
@@ -20,7 +20,7 @@ AoCDay15 >> computeGps: grid forShape: shape [
 	^ res
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay15 >> embiggenItems: lines [
 
 	^ lines collect: [ :line |
@@ -34,13 +34,18 @@ AoCDay15 >> embiggenItems: lines [
 						  otherwise: [ self error: 'Invalid item' ] ] ]
 ]
 
-{ #category : 'as yet unclassified' }
-AoCDay15 >> handleLeftBracket: robot nextPos: nextPos in: grid [
+{ #category : 'executing' }
+AoCDay15 >> handleLeftBracket: pos direction: dir nextPos: nextPos in: grid [
+	
+]
+
+{ #category : 'executing' }
+AoCDay15 >> handleRightBracket: robot direction: dir nextPos: nextPos in: grid [
 
 	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay15 >> moveRobot: robot direction: dir onGrid: grid [
 
 	| nextPos next result |
@@ -53,13 +58,7 @@ AoCDay15 >> moveRobot: robot direction: dir onGrid: grid [
 		           otherwise: [ self error: 'Invalid direction' ].
 
 	next := grid at: nextPos.
-
-	"Transcript
-		show: 'nextPos: ';
-		show: nextPos asString;
-		show: ', next: ';
-		show: next asString;
-		cr."
+	result := nil.
 
 	next ifNotNil: [
 			result := next
@@ -77,24 +76,27 @@ AoCDay15 >> moveRobot: robot direction: dir onGrid: grid [
 								           ifFalse: [
 								           self swapItems: robot with: nextPos in: grid ] ]).
 						          ([ '#' ] -> [ robot ]).
-						          ([ '[' ]
-						           -> [
-						           self
-							           handleLeftBracket: robot
-							           nextPos: nextPos
-							           in: grid ]).
-						          ([ ']' ]
-						           -> [
-						           self
-							           handleRightBracket: robot
-							           nextPos: nextPos
-							           in: grid ]) }
+						          ([ '[' ] -> [
+							           (dir = '<' or: dir = '>')
+								           ifTrue: [
+								           self swapItems: robot with: nextPos in: grid ]
+								           ifFalse: [
+										           self
+											           handleLeftBracket: robot
+											           direction: dir
+											           nextPos: nextPos
+											           in: grid ] ]).
+						          ([ ']' ] -> [
+							           (dir = '<' or: dir = '>')
+								           ifTrue: [
+								           self swapItems: robot with: nextPos in: grid ]
+								           ifFalse: [
+										           self
+											           handleRightBracket: robot
+											           direction: dir
+											           nextPos: nextPos
+											           in: grid ] ]) }
 				          otherwise: [ robot ] ].
-
-	"Transcript
-		show: '----------';
-		cr.
-	grid printGridOn: Transcript."
 
 	^ result
 ]
@@ -172,7 +174,7 @@ AoCDay15 >> part2: lines [
 	^ self computeGps: grid forShape: '['
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'executing' }
 AoCDay15 >> swapItems: from with: to in: grid [
 
 	| fromValue toValue |

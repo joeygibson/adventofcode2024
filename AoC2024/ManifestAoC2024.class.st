@@ -27,5 +27,12 @@ ManifestAoC2024 class >> ruleCollectionProtocolRuleV1FalsePositive [
 ManifestAoC2024 class >> ruleLongMethodsRuleV1FalsePositive [
 
 	<ignoreForCoverage>
-	^ #(#(#(#RGPackageDefinition #(#AoC2024)) #'2025-07-30T11:56:02.619175-04:00') )
+	^ #(#(#(#RGPackageDefinition #(#AoC2024)) #'2025-07-30T11:56:02.619175-04:00') #(#(#RGMethodDefinition #(#AoCDay15 #moveRobot:direction:onGrid: #false)) #'2025-08-03T19:52:28.642842-04:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestAoC2024 class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay15 #moveRobot:direction:onGrid: #false)) #'2025-08-03T19:52:33.892962-04:00') )
 ]
