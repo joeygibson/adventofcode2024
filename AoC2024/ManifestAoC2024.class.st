@@ -36,3 +36,10 @@ ManifestAoC2024 class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#AoCDay15 #moveRobot:direction:onGrid: #false)) #'2025-08-03T19:52:33.892962-04:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestAoC2024 class >> ruleUnclassifiedMethodsRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGClassDefinition #(#AoCDay16)) #'2025-08-03T22:50:26.960883-04:00') )
+]
