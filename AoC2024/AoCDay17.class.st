@@ -34,3 +34,28 @@ AoCDay17 >> part1: lines [
 	
 	^computer output.
 ]
+
+{ #category : 'executing' }
+AoCDay17 >> part2: lines [
+
+	| a b c program computer |
+	computer := self createComputer: lines.
+
+	a := 0.
+	b := computer regB.
+	c := computer regC.
+
+	program := computer program asOrderedCollection.
+
+	program size to: 1 by: -1 do: [ :i |
+			| res val |
+			val := program allButFirst: i - 1.
+
+			a := a bitShift: 3.
+			[
+				res := computer runWith: a b: b c: c.
+
+				res = val ] whileFalse: [ a := a + 1 ] ].
+
+	^ a
+]

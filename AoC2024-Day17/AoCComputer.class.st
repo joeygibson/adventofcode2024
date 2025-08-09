@@ -242,3 +242,18 @@ AoCComputer >> run [
 
 			jumped := false ]
 ]
+
+{ #category : 'running' }
+AoCComputer >> runWith: a b: b c: c [
+
+	self regA: a.
+	self regB: b.
+	self regC: c.
+	self buffer: OrderedCollection new.
+	self intPointer: 1.
+	self jumped: false.
+
+	self run.
+
+	^ self buffer.
+]
