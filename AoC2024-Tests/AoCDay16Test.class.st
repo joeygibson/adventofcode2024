@@ -12,20 +12,8 @@ AoCDay16Test >> setUp [
 	self path: FileLocator home / 'Projects' / 'adventofcode2024' asString.
 	
 	inst := AoCDay16 new.
-]
-
-{ #category : 'tests' }
-AoCDay16Test >> testPart1WithFRealData [
-
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input1.txt'
-		         for: self day
-		         onPath: self path.
-
-	res := inst part1: lines.
-
-	self assert: res equals: 122492
+	
+	Transcript clear.
 ]
 
 { #category : 'tests' }
@@ -40,6 +28,20 @@ AoCDay16Test >> testPart1WithOtherSample [
 	res := inst part1: lines.
 
 	self assert: res equals: 11048
+]
+
+{ #category : 'tests' }
+AoCDay16Test >> testPart1WithRealData [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part1: lines.
+
+	self assert: res equals: 122492
 ]
 
 { #category : 'tests' }
