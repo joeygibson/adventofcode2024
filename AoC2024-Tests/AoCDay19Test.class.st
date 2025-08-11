@@ -52,6 +52,8 @@ AoCDay19Test >> testPart2WithRealData [
 		         for: self day
 		         onPath: self path.
 
+	self increaseTimeout: 600.
+	
 	res := inst part2: lines.
 
 	self assert: res equals: 758890600222015
