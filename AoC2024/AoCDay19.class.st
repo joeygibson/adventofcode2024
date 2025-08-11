@@ -21,19 +21,25 @@ AoCDay19 >> initialize [
 { #category : 'accessing' }
 AoCDay19 >> isPossible: design startingAt: index [
 
-	| res |
-	design size = index ifTrue: [ ^ 1 ].
+	^ designCache
+		  at: (OrderedCollection with: design with: index)
+		  ifAbsentPut: [
+				  | res |
+				  design size = index ifTrue: [ ^ 1 ].
 
-	res := 0.
+				  res := 0.
 
-	towels do: [ :towel |
-			| pattern |
-			pattern := '^{1}' format: { towel }.
-			(pattern asRegex matchesPrefix: (design allButFirst: index))
-				ifTrue: [
-					res := res
-					       + (self isPossible: design startingAt: towel size + index) ] ].
-	^ res
+				  towels do: [ :towel |
+						  | pattern |
+						  pattern := '^{1}' format: { towel }.
+						  (pattern asRegex matchesPrefix: (design allButFirst: index))
+							  ifTrue: [
+								  res := res
+								         +
+								         (self
+									          isPossible: design
+									          startingAt: towel size + index) ] ].
+				  ^ res ]
 ]
 
 { #category : 'executing' }
@@ -47,4 +53,17 @@ AoCDay19 >> part1: lines [
 		                 self isPossible: design startingAt: 0 ].
 
 	^ (possibilities select: [ :item | item ~= 0 ]) size
+]
+
+{ #category : 'executing' }
+AoCDay19 >> part2: lines [
+
+	| possibilities |
+	towels := lines first substrings: ', '.
+	designs := lines allButFirst: 2.
+
+	possibilities := designs collect: [ :design |
+		                 self isPossible: design startingAt: 0 ].
+
+	^ possibilities sum
 ]

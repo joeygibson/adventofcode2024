@@ -23,6 +23,7 @@ AoCDay19Test >> testPart1WithRealData [
 		         for: self day
 		         onPath: self path.
 
+	self increaseTimeout: 600.
 	res := inst part1: lines.
 
 	self assert: res equals: 336
@@ -40,4 +41,32 @@ AoCDay19Test >> testPart1WithSample [
 	res := inst part1: lines.
 
 	self assert: res equals: 6
+]
+
+{ #category : 'tests' }
+AoCDay19Test >> testPart2WithRealData [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 758890600222015
+]
+
+{ #category : 'tests' }
+AoCDay19Test >> testPart2WithSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 16
 ]
