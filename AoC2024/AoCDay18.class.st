@@ -120,11 +120,31 @@ AoCDay18 >> part1: lines size: size iterations: iterations [
 
 	path := self findShortestPath.
 
-	Transcript
-		show: path;
-		cr.
-
 	^ path size - 1
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay18 >> part2: lines size: size iterations: iterations [
+
+	| upcoming path |
+	map := CTArray2D
+		       width: size + 1
+		       height: size + 1
+		       tabulate: [ :x :y | '.' ].
+
+	startPoint := 1 @ 1.
+	endPoint := size + 1 @ (size + 1).
+	upcoming := self parseToPoints: lines.
+
+	(upcoming takeFirst: iterations) do: [ :spot | map at: spot put: '#' ].
+
+	path := self findShortestPath.
+
+	(upcoming allButFirst: iterations) do: [ :spot |
+			map at: spot put: '#'.
+			path := self findShortestPath.
+
+			path ifEmpty: [ ^ spot - 1 ] ]
 ]
 
 { #category : 'as yet unclassified' }
