@@ -25,21 +25,22 @@ AoCDay19 >> isPossible: design startingAt: index [
 		  at: (OrderedCollection with: design with: index)
 		  ifAbsentPut: [
 				  | res |
-				  design size = index ifTrue: [ ^ 1 ].
+				  design size = index
+					  ifTrue: [ 1 ]
+					  ifFalse: [
+							  res := 0.
 
-				  res := 0.
-
-				  towels do: [ :towel |
-						  | pattern |
-						  pattern := '^{1}' format: { towel }.
-						  (pattern asRegex matchesPrefix: (design allButFirst: index))
-							  ifTrue: [
-								  res := res
-								         +
-								         (self
-									          isPossible: design
-									          startingAt: towel size + index) ] ].
-				  ^ res ]
+							  towels do: [ :towel |
+									  | pattern |
+									  pattern := '^{1}' format: { towel }.
+									  (pattern asRegex matchesPrefix: (design allButFirst: index))
+										  ifTrue: [
+											  res := res
+											         +
+											         (self
+												          isPossible: design
+												          startingAt: towel size + index) ] ].
+							  res ] ]
 ]
 
 { #category : 'executing' }
