@@ -51,7 +51,7 @@ AoCDay18Test >> testPart2WithRealData [
 		         for: self day
 		         onPath: self path.
 
-	self timeLimit: 800.
+	self increaseTimeout: 600.
 
 	res := inst part2: lines size: 70 iterations: 1024.
 
