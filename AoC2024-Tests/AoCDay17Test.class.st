@@ -61,7 +61,7 @@ AoCDay17Test >> testPart2WithSample [
 
 	| lines res |
 	lines := self
-		         readInputFileAsLines: 'foo.txt'
+		         readInputFileAsLines: 'input7.txt'
 		         for: self day
 		         onPath: self path.
 		
