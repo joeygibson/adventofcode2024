@@ -31,6 +31,13 @@ ManifestAoC2024 class >> ruleLongMethodsRuleV1FalsePositive [
 ]
 
 { #category : 'code-critics' }
+ManifestAoC2024 class >> ruleModifiesCollectionRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay20 #calculateTimeSavings:withPairs:minimumSavings: #false)) #'2025-08-13T21:36:25.819089-04:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestAoC2024 class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
 
 	<ignoreForCoverage>

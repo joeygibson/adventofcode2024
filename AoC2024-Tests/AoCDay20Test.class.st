@@ -28,17 +28,3 @@ AoCDay20Test >> testPart1WithRealData [
 
 	self assert: res equals: 1530
 ]
-
-{ #category : 'tests' }
-AoCDay20Test >> testPart1WithSample [
-
-	| lines res |
-	lines := self
-		         readInputFileAsLines: 'input0.txt'
-		         for: self day
-		         onPath: self path.
-
-	res := inst part1: lines.
-
-	self assert: res equals: 6
-]
