@@ -105,7 +105,7 @@ AoCDay20 >> findPaths [
 ]
 
 { #category : 'executing' }
-AoCDay20 >> part1: lines [
+AoCDay20 >> solve: lines withCheatDistance: cheatDistance [
 
 	| endPoint paths endDistances pairs totalSavings |
 	map := self parseToGridAsStrings: lines.
@@ -115,7 +115,7 @@ AoCDay20 >> part1: lines [
 
 	endDistances := self findDistances: paths startPoint: endPoint.
 
-	pairs := self findPairs: paths withinDistance: 2.
+	pairs := self findPairs: paths withinDistance: cheatDistance.
 
 	totalSavings := self
 		                calculateTimeSavings: endDistances

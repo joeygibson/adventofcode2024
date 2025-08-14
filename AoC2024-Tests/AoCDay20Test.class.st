@@ -23,8 +23,21 @@ AoCDay20Test >> testPart1WithRealData [
 		         for: self day
 		         onPath: self path.
 
-	self increaseTimeout: 600.
-	res := inst part1: lines.
+	res := inst solve: lines withCheatDistance: 2.
 
 	self assert: res equals: 1530
+]
+
+{ #category : 'tests' }
+AoCDay20Test >> testPart2WithRealData [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst solve: lines withCheatDistance: 20.
+
+	self assert: res equals: 1033983
 ]
