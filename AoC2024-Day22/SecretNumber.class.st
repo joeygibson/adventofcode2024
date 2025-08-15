@@ -42,6 +42,7 @@ SecretNumber >> evolve [
 	workingValue := currentValue bitXor: workingValue.
 	currentValue := workingValue \\ 16777216.
 
+
 	^ currentValue
 ]
 

@@ -41,3 +41,31 @@ AoCDay22Test >> testPart1WithSample [
 
 	self assert: res equals: 37327623
 ]
+
+{ #category : 'tests' }
+AoCDay22Test >> testPart2WithRealData [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input1.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 1501
+]
+
+{ #category : 'tests' }
+AoCDay22Test >> testPart2WithSample [
+
+	| lines res |
+	lines := self
+		         readInputFileAsLines: 'input0.txt'
+		         for: self day
+		         onPath: self path.
+
+	res := inst part2: lines.
+
+	self assert: res equals: 24
+]
