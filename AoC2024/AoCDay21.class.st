@@ -76,8 +76,8 @@ AoCDay21 >> createNumericKeypad [
 	keypad at: '0' put: 2 @ 4.
 	keypad at: 'A' put: 3 @ 4.
 
-	directionKeypad := keypad.
-	directionKeypadMap := map
+	numericKeypad := keypad.
+	numericKeypadMap := map
 ]
 
 { #category : 'as yet unclassified' }
@@ -92,11 +92,11 @@ AoCDay21 >> enterCode: code onKeypad: keypad withMap: map [
 
 	keys overlappingPairsDo: [ :a :b |
 			| keyA keyB moves |
-			keyA := map at: (a asString).
-			keyB := map at: (b asString).
+			keyA := keypad at: a.
+			keyB := keypad at: b.
 
 			aStar := AStarSolver
-				         withMap: keypad
+				         withMap: map
 				         startPoint: keyA
 				         endPoint: keyB.
 			moves := aStar findShortestPath.
