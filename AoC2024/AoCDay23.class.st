@@ -12,6 +12,28 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+AoCDay23 >> bronKerbosch: selected candidates: candidates excluded: excluded [
+
+	| maxClique |
+	(candidates isEmpty and: excluded isEmpty) ifTrue: [ ^ selected ].
+
+	maxClique := Set new.
+
+	candidates copy do: [ :v |
+			| clique |
+			clique := self
+				          bronKerbosch: (selected union: (Set with: v))
+				          candidates: (candidates intersection: (network at: v))
+				          excluded: (excluded intersection: (network at: v)).
+
+			maxClique := maxClique max: clique by: [ :each | each size ].
+			candidates remove: v ifAbsent: nil.
+			excluded add: v ].
+
+	^ maxClique
+]
+
+{ #category : 'as yet unclassified' }
 AoCDay23 >> createNetwork: lines [
 
 	network := Dictionary new.
@@ -56,4 +78,18 @@ AoCDay23 >> part1: lines [
 											b } sorted ] ] ] ].
 
 	^ triples size
+]
+
+{ #category : 'executing' }
+AoCDay23 >> part2: lines [
+
+	| results |
+	self createNetwork: lines.
+
+	results := self
+		           bronKerbosch: Set new
+		           candidates: network keys asSet
+		           excluded: Set new.
+
+	^ results asSet sorted joinUsing: ','
 ]
