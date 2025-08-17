@@ -13,7 +13,7 @@ Class {
 
 { #category : 'as yet unclassified' }
 AoCDay23 >> bronKerbosch: selected candidates: candidates excluded: excluded [
-
+	"Borroed from https://github.com/mgtezak/Advent_of_Code/blob/master/2024/23/p2.py"
 	| maxClique |
 	(candidates isEmpty and: excluded isEmpty) ifTrue: [ ^ selected ].
 
@@ -26,7 +26,9 @@ AoCDay23 >> bronKerbosch: selected candidates: candidates excluded: excluded [
 				          candidates: (candidates intersection: (network at: v))
 				          excluded: (excluded intersection: (network at: v)).
 
-			maxClique := maxClique max: clique by: [ :each | each size ].
+			maxClique := maxClique size >= clique size
+				             ifTrue: [ maxClique ]
+				             ifFalse: [ clique ].
 			candidates remove: v ifAbsent: nil.
 			excluded add: v ].
 
